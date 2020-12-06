@@ -1,0 +1,27 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": ["airbnb-typescript-prettier"],
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
+  "rules": {
+    "prettier/prettier": [
+      "warn",
+      {
+        "arrowParens": "avoid",
+        "semi": true,
+        "trailingComma": "none",
+        "endOfLine": "lf",
+        "singleQuote": true,
+        "tabWidth": 2,
+        "printWidth": 120,
+        "useTabs": false
+      }
+    ],
+    "no-unused-vars": ["warn", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
+    "no-console": "warn"
+  }
+}
