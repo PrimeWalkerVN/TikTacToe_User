@@ -19,7 +19,7 @@ const userSlice = createSlice({
       localStorage.clear();
     },
     setUser: (state, action) => {
-      state.user = action.payload.user;
+      state.user = action.payload;
     },
     setLogged: (state, action) => {
       state.logged = action.payload;

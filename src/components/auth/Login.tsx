@@ -1,12 +1,14 @@
 import { Alert, Button, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import queryString from 'query-string';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
-import queryString from 'query-string';
 import usersApi from '../../api/userApi';
-import { setUserLogin } from '../../redux/reducers/userReducer';
-import Notification from '../common/Notification';
+import facebookLogo from '../../assets/images/facebook.svg';
+import googleLogo from '../../assets/images/google.svg';
+import { setLogged, setUser, setUserLogin } from '../../redux/reducers/userReducer';
 import Loading from '../common/Loading';
+import Notification from '../common/Notification';
 
 const Login: React.FC = () => {
   const [errors, setErrors] = useState<string>('');
@@ -14,11 +16,30 @@ const Login: React.FC = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const query: any = queryString.parse(history.location.search);
-
   interface valueType {
     username: string;
     password: string;
   }
+
+  useEffect(() => {
+    const callMe = async () => {
+      try {
+        const user = await usersApi.getMe();
+        setIsLoading(true);
+        if (user) {
+          dispatch(setUser(user));
+          dispatch(setLogged(true));
+        }
+      } catch (e) {
+        Notification('error', 'Error', e.message);
+      }
+    };
+    if (query.token) {
+      localStorage.setItem('access_token', query.token);
+      callMe();
+    }
+  }, [dispatch, history, query]);
+
   const onSubmitHandler = async (values: valueType) => {
     setIsLoading(true);
     try {
@@ -89,14 +110,14 @@ const Login: React.FC = () => {
         </Form>
         <div className="flex pb-5">
           <button type="button" className="w-12 h-12 mr-5">
-            {/* <a href={`${process.env.REACT_APP_API}/users/auth/facebook`}>
+            <a href={`${process.env.REACT_APP_API}/users/auth/facebook`}>
               <img src={facebookLogo} alt="facebook logo" />
-            </a> */}
+            </a>
           </button>
           <button type="button" className="w-12 h-12">
-            {/* <a href={`${process.env.REACT_APP_API}/users/auth/google`}>
+            <a href={`${process.env.REACT_APP_API}/users/auth/google`}>
               <img src={googleLogo} alt="google logo" />
-            </a> */}
+            </a>
           </button>
         </div>
 
