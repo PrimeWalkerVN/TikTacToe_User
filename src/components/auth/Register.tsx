@@ -1,9 +1,27 @@
 import { Alert, Button, Form, Input } from 'antd';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import usersApi from '../../api/userApi';
+import Loading from '../common/Loading';
+import Notification from '../common/Notification';
 
 const Register: React.FC = () => {
-  const [errors] = useState<string>('');
+  const [errors, setErrors] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const history = useHistory();
+  const onSubmitHandler = async (params: any) => {
+    setIsLoading(true);
+    delete params.confirm;
+    try {
+      const res: any = await usersApi.register(params);
+      history.push('/login');
+      Notification('success', 'Register success', res.message);
+    } catch (err) {
+      if (err.response) setErrors(err.response.data.message.toString());
+      else setErrors(err);
+    }
+    setIsLoading(false);
+  };
   const formItemLayout = {
     labelCol: {
       span: 10
@@ -11,9 +29,10 @@ const Register: React.FC = () => {
   };
   return (
     <div className="w-full flex justify-center items-center h-screen bg-gray-100">
+      {isLoading && <Loading />}
       <div className="w-1/4 box-border shadow-2xl px-6 flex flex-col items-center bg-white">
         <span className="text-4xl font-bold py-10">REGISTER</span>
-        <Form name="basic" className="flex flex-col" {...formItemLayout} size="large">
+        <Form onFinish={onSubmitHandler} name="basic" className="flex flex-col" {...formItemLayout} size="large">
           <Form.Item
             label="Username"
             name="username"

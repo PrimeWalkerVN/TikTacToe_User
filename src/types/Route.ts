@@ -1,8 +1,8 @@
-import { RouteChildrenProps, RouteComponentProps } from 'react-router-dom';
+import { RouteChildrenProps, RouteComponentProps, RouteProps } from 'react-router-dom';
 
-export interface RouteProps {
+export interface PrivateRouteProps extends RouteProps {
   location?: any;
-  component: React.ComponentType;
+  component: any;
   render?: (props: RouteComponentProps<any>) => React.ReactNode;
   children?: ((props: RouteChildrenProps<any>) => React.ReactNode) | React.ReactNode;
   path?: string | string[];

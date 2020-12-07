@@ -1,9 +1,38 @@
 import { Alert, Button, Form, Input } from 'antd';
 import React, { useState } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
+import queryString from 'query-string';
+import usersApi from '../../api/userApi';
+import { setUserLogin } from '../../redux/reducers/userReducer';
+import Notification from '../common/Notification';
+import Loading from '../common/Loading';
 
 const Login: React.FC = () => {
-  const [errors] = useState<string>('');
+  const [errors, setErrors] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const query: any = queryString.parse(history.location.search);
+
+  interface valueType {
+    username: string;
+    password: string;
+  }
+  const onSubmitHandler = async (values: valueType) => {
+    setIsLoading(true);
+    try {
+      const res: any = await usersApi.login(values);
+      if (res.err) throw new Error(res.message);
+      dispatch(setUserLogin(res));
+      history.push(query.next);
+      Notification('success', 'Hi', res.user.fullName);
+    } catch (err) {
+      setErrors(err.message);
+    }
+    setIsLoading(false);
+  };
+
   const formItemLayout = {
     labelCol: {
       span: 8
@@ -12,11 +41,13 @@ const Login: React.FC = () => {
       span: 24
     }
   };
+
   return (
     <div className="w-full flex justify-center items-center h-screen bg-gray-100">
+      {isLoading && <Loading />}
       <div className="w-1/4 box-border shadow-2xl px-10 flex flex-col items-center bg-white">
         <span className="text-4xl font-bold py-10">LOGIN</span>
-        <Form name="basic" className="flex flex-col" {...formItemLayout} size="large">
+        <Form name="basic" onFinish={onSubmitHandler} className="flex flex-col" {...formItemLayout} size="large">
           <Form.Item
             label="Username"
             labelAlign="left"
