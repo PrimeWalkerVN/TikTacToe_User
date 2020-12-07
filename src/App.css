@@ -1,0 +1,6 @@
+@import './assets/styles/main.css';
+
+.modal-loading .ant-modal-content {
+    background: none;
+    box-shadow: none;
+}
