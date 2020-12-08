@@ -1,5 +1,6 @@
 import { Button } from 'antd';
 import * as React from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { io } from 'socket.io-client';
@@ -11,6 +12,7 @@ import UsersStatus from './UserStatus/UsersStatus';
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const ENDPOINT = 'http://localhost:8080';
+  const TOKEN = localStorage.getItem('access_token');
 
   const user: any = useSelector((state: RootState) => state.user.user);
   const history = useHistory();
@@ -24,10 +26,14 @@ const Dashboard: React.FC = () => {
     history.push('/dashboard');
   };
 
-  const emitFunction = () => {
+  useEffect(() => {
     const socket = io(ENDPOINT);
-    socket.emit('message');
-  };
+    socket.emit('login', {token: TOKEN});
+
+    return () => {
+    socket.emit('logout', {token: TOKEN});
+    }
+  })
 
   return (
     <div className="w-full">
@@ -40,7 +46,7 @@ const Dashboard: React.FC = () => {
       />
       <div className="flex justify-center w-full">
         <UsersStatus />
-        <Button onClick={() => emitFunction()}>Emmit</Button>
+        <Button>Emmit</Button>
       </div>
     </div>
   );
