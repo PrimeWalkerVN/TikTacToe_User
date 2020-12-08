@@ -30,6 +30,10 @@ const Dashboard: React.FC = () => {
     const socket = io(ENDPOINT);
     socket.emit('login', {token: TOKEN});
 
+    socket.on('list', (data : any) =>{
+      console.log(data);
+    })
+
     return () => {
     socket.emit('logout', {token: TOKEN});
     }
