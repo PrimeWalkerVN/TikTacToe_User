@@ -1,6 +1,13 @@
 import axiosClient from './axiosClient';
 
-const usersApi = {
+interface typeUserApi {
+  login: any;
+  getMe: any;
+  register: any;
+  loginWithGoogle: any;
+  updateProfile: any;
+}
+const usersApi: typeUserApi = {
   login: (params: any) => {
     const url = '/users/sign-in';
     return axiosClient.post(url, params);
