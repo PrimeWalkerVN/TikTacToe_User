@@ -1,16 +1,20 @@
 import React from 'react';
 import User from './User';
 
-const UsersStatus: React.FC = () => {
-  const users = [
-    { id: 1, username: 'thanh', status: 'offline' },
-    { id: 2, username: 'thanh2', status: 'offline' }
-  ];
+interface Props {
+  users: any;
+  user: any;
+}
+const UsersStatus: React.FC<Props> = props => {
+  const { users, user } = props;
+
   return (
-    <div className="border-gray-200">
-      {users.map(user => (
-        <User key={user.id} username={user.username} status={user.status} />
-      ))}
+    <div className="flex flex-col">
+      {users.length > 0 &&
+        users.map((item: any) => {
+          if (item._id !== user._id) return <User key={item.id} username={item.fullName} status={item.status} />;
+          return null;
+        })}
     </div>
   );
 };

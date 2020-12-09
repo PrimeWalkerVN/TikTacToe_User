@@ -9,10 +9,10 @@ interface Props {
 const User: React.FC<Props> = props => {
   const { username, avatar = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png', status } = props;
   return (
-    <div className="flex flex-row items-center justify-between w-32 m-2">
+    <div className="flex flex-row items-center justify-between w-40 m-2">
       <Avatar src={avatar} />
-      <div>{username}</div>
-      <div style={{ backgroundColor: status === 'online' ? 'green' : 'red' }} className="rounded-full w-4 h-4" />
+      <div className="truncate ml-2">{username}</div>
+      <div style={{ backgroundColor: status === 'online' ? 'green' : 'red' }} className="rounded-full w-3 h-3 ml-2" />
     </div>
   );
 };
