@@ -1,6 +1,12 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import {
+  useEffect,
+  useState
+} from 'react';
+import {
+  useDispatch,
+  useSelector
+} from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { logout } from '../../redux/reducers/userReducer';
@@ -10,11 +16,19 @@ import UsersStatus from './UserStatus/UsersStatus';
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
-  const ENDPOINT = 'http://localhost:8080';
-  const TOKEN = localStorage.getItem('access_token');
-  const [users, setUsers] = useState([]);
+  const ENDPOINT =
+    'http://localhost:8080';
+  const TOKEN = localStorage.getItem(
+    'access_token'
+  );
+  const [users, setUsers] = useState(
+    []
+  );
 
-  const user: any = useSelector((state: RootState) => state.user.user);
+  const user: any = useSelector(
+    (state: RootState) =>
+      state.user.user
+  );
   const history = useHistory();
   const logoutHandler = () => {
     dispatch(logout());
@@ -28,18 +42,30 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const socket = io(ENDPOINT);
-    socket.emit('login', { token: TOKEN });
+    socket.emit('login', {
+      token: TOKEN
+    });
 
-    socket.on('list', (listUsers: any) => {
-      setUsers(listUsers);
-    });
-    window.addEventListener('beforeunload', ev => {
-      ev.preventDefault();
-      return socket.emit('logout', { token: TOKEN });
-    });
+    socket.on(
+      'list',
+      (listUsers: any) => {
+        setUsers(listUsers);
+      }
+    );
+    window.addEventListener(
+      'beforeunload',
+      ev => {
+        ev.preventDefault();
+        return socket.emit('logout', {
+          token: TOKEN
+        });
+      }
+    );
 
     return () => {
-      socket.emit('logout', { token: TOKEN });
+      socket.emit('logout', {
+        token: TOKEN
+      });
       socket.disconnect();
     };
   }, [TOKEN]);
@@ -47,14 +73,19 @@ const Dashboard: React.FC = () => {
   return (
     <div className="w-full">
       <Header
-        redirectHomeHandler={redirectHomeHandler}
+        redirectHomeHandler={
+          redirectHomeHandler
+        }
         name="Tik tac toe"
         username={user.fullName}
         logoutHandler={logoutHandler}
         profileHandler={profileHandler}
       />
       <div className="flex justify-center w-full">
-        <UsersStatus users={users} user={user} />
+        <UsersStatus
+          users={users}
+          user={user}
+        />
       </div>
     </div>
   );
