@@ -10,7 +10,7 @@ import UsersStatus from './UserStatus/UsersStatus';
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
-  const ENDPOINT = 'http://localhost:8080';
+  const ENDPOINT = 'https://tictactoe-api-v1.herokuapp.com';
   const TOKEN = localStorage.getItem('access_token');
   const [users, setUsers] = useState([]);
 

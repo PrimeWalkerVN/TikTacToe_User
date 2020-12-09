@@ -6,6 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import store from './redux/store/store';
 import './App.css';
 
+require('dotenv').config();
+
 const App = React.lazy(() => import('./App'));
 
 ReactDOM.render(
