@@ -15,6 +15,7 @@
     "antd": "^4.9.1",
     "axios": "^0.21.0",
     "dotenv": "^8.2.0",
+    "eslint-config-airbnb": "^18.2.1",
     "postcss": "^8.1.14",
     "postcss-nested": "^5.0.2",
     "query-string": "^6.13.7",
@@ -25,7 +26,7 @@
     "react-scripts": "4.0.1",
     "redux": "^4.0.5",
     "socket.io-client": "^3.0.4",
-    "typescript": "^4.0.3",
+    "typescript": "^4.1.2",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
@@ -56,9 +57,14 @@
   "devDependencies": {
     "@types/react-redux": "^7.1.11",
     "@types/react-router-dom": "^5.1.6",
+    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/parser": "^4.9.1",
     "autoprefixer": "^10.0.4",
     "eslint": "^7.15.0",
-    "eslint-config-airbnb-typescript-prettier": "^4.1.0",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-import-resolver-typescript": "^2.3.0",
+    "eslint-plugin-prettier": "^3.2.0",
+    "eslint-plugin-react": "^7.21.5",
     "postcss-cli": "^8.3.0",
     "prettier": "^2.2.1",
     "tailwindcss": "^2.0.1"

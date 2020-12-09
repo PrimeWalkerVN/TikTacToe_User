@@ -8,6 +8,7 @@ import facebookLogo from '../../assets/images/facebook.svg';
 import googleLogo from '../../assets/images/google.svg';
 import { setLogged, setUser, setUserLogin } from '../../redux/reducers/userReducer';
 import Loading from '../common/Loading';
+
 import Notification from '../common/Notification';
 
 const Login: React.FC = () => {
