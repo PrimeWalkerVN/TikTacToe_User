@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import gamesApi from '../../api/gameApi';
-import socket from '../../socket/socket';
+import Socket from '../../socket/socket';
 import { RootState } from '../../types/Reducer';
 import Loading from '../common/Loading';
 import Notification from '../common/Notification';
@@ -17,6 +17,7 @@ const Main = () => {
   const user: any = useSelector((state: RootState) => state.user.user);
   const [users, setUsers] = useState([]);
   const [games, setGames] = useState([]);
+  const socket: any = Socket.getInstance();
 
   useEffect(() => {
     socket.emit('login', { token: TOKEN });
@@ -39,7 +40,7 @@ const Main = () => {
       socket.emit('logout', { token: TOKEN });
       socket.disconnect();
     };
-  }, [TOKEN]);
+  }, [TOKEN, socket]);
 
   const createNewGame = async () => {
     setIsLoading(true);
@@ -49,13 +50,11 @@ const Main = () => {
 
       socket.emit('joinRoom', { gameId: res.body.gameId.toString() });
       socket.on('gameCreated', (data: any) => {
-        console.log(data);
         setIsLoading(false);
         history.push(`/dashboard/game/${data.gameId}`);
       });
     } catch (err) {
       if (err.response.data.message) {
-        console.log(err);
         setIsLoading(false);
         Notification('error', 'Error', err.response.data.message);
       }

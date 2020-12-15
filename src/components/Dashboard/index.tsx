@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, useHistory } from 'react-router-dom';
 import { logout } from '../../redux/reducers/userReducer';
+import Socket from '../../socket/socket';
 import { RootState } from '../../types/Reducer';
 import PrivateRoute from '../auth/PrivateRoute';
 import Header from '../common/Header';
@@ -23,6 +24,7 @@ const Dashboard: React.FC = () => {
   const redirectHomeHandler = () => {
     history.push('/dashboard');
   };
+  Socket.openConnect();
 
   return (
     <div className="w-full">
