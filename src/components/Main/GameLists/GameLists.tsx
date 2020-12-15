@@ -8,7 +8,6 @@ interface Props {
 
 const GameLists: React.FC<Props> = props => {
   const { data } = props;
-  console.log(data);
 
   return (
     <div className="w-full">

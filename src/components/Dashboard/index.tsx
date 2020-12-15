@@ -5,9 +5,10 @@ import { logout } from '../../redux/reducers/userReducer';
 import { RootState } from '../../types/Reducer';
 import PrivateRoute from '../auth/PrivateRoute';
 import Header from '../common/Header';
-import Game from '../Game';
-import Main from '../Main';
-import Profile from '../Profile';
+
+const Game = React.lazy(() => import('../Game'));
+const Main = React.lazy(() => import('../Main'));
+const Profile = React.lazy(() => import('../Profile'));
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();

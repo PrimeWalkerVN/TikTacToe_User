@@ -1,30 +1,29 @@
-import { Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { io } from 'socket.io-client';
+import gamesApi from '../../api/gameApi';
+import socket from '../../socket/socket';
 import { RootState } from '../../types/Reducer';
+import Loading from '../common/Loading';
+import Notification from '../common/Notification';
 import { AddBoard } from './AddBoard';
 import GameLists from './GameLists/GameLists';
 import UsersStatus from './UserStatus';
-import Loading from '../common/Loading';
-import gamesApi from '../../api/gameApi';
 
 const Main = () => {
   const history = useHistory();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const ENDPOINT = 'http://localhost:8080';
   const TOKEN = localStorage.getItem('access_token');
   const user: any = useSelector((state: RootState) => state.user.user);
   const [users, setUsers] = useState([]);
   const [games, setGames] = useState([]);
-  const socket = io(ENDPOINT);
 
   useEffect(() => {
     socket.emit('login', { token: TOKEN });
 
-    socket.on('list', (listUsers: any) => {
-      setUsers(listUsers);
+    socket.on('list', (data: any) => {
+      setUsers(data.listUsers);
+      if (data.listGames) setGames(data.listGames);
     });
 
     socket.on('newGameCreated', (data: any) => {
@@ -47,14 +46,19 @@ const Main = () => {
     const params = { token: TOKEN };
     try {
       const res: any = await gamesApi.create(params);
+
       socket.emit('joinRoom', { gameId: res.body.gameId.toString() });
       socket.on('gameCreated', (data: any) => {
+        console.log(data);
         setIsLoading(false);
         history.push(`/dashboard/game/${data.gameId}`);
       });
     } catch (err) {
-      // console.log(err);
-      // if (err.response) setErrors(err.response.data.message.toString());
+      if (err.response.data.message) {
+        console.log(err);
+        setIsLoading(false);
+        Notification('error', 'Error', err.response.data.message);
+      }
     }
   };
 
