@@ -26,7 +26,6 @@ const Login: React.FC = () => {
     const callMe = async () => {
       try {
         const user = await usersApi.getMe();
-        setIsLoading(true);
         if (user) {
           dispatch(setUser(user));
           dispatch(setLogged(true));
@@ -36,8 +35,10 @@ const Login: React.FC = () => {
       }
     };
     if (query.token) {
+      setIsLoading(true);
       localStorage.setItem('access_token', query.token);
       callMe();
+      setIsLoading(false);
     }
   }, [dispatch, history, query]);
 

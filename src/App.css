@@ -4,3 +4,15 @@
     background: none;
     box-shadow: none;
 }
+
+.main-add {
+    flex: 0.2
+}
+
+.main-lists {
+    flex: 0.6
+}
+
+.main-users {
+    flex: 0.2
+}

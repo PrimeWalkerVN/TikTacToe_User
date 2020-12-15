@@ -1,19 +1,16 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-import { io } from 'socket.io-client';
+import { Switch, useHistory } from 'react-router-dom';
 import { logout } from '../../redux/reducers/userReducer';
 import { RootState } from '../../types/Reducer';
+import PrivateRoute from '../auth/PrivateRoute';
 import Header from '../common/Header';
-import UsersStatus from './UserStatus/UsersStatus';
+import Game from '../Game';
+import Main from '../Main';
+import Profile from '../Profile';
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
-  const ENDPOINT = 'https://tictactoe-api-v1.herokuapp.com';
-  const TOKEN = localStorage.getItem('access_token');
-  const [users, setUsers] = useState([]);
-
   const user: any = useSelector((state: RootState) => state.user.user);
   const history = useHistory();
   const logoutHandler = () => {
@@ -26,24 +23,6 @@ const Dashboard: React.FC = () => {
     history.push('/dashboard');
   };
 
-  useEffect(() => {
-    const socket = io(ENDPOINT);
-    socket.emit('login', { token: TOKEN });
-
-    socket.on('list', (listUsers: any) => {
-      setUsers(listUsers);
-    });
-    window.addEventListener('beforeunload', ev => {
-      ev.preventDefault();
-      return socket.emit('logout', { token: TOKEN });
-    });
-
-    return () => {
-      socket.emit('logout', { token: TOKEN });
-      socket.disconnect();
-    };
-  }, [TOKEN]);
-
   return (
     <div className="w-full">
       <Header
@@ -53,9 +32,11 @@ const Dashboard: React.FC = () => {
         logoutHandler={logoutHandler}
         profileHandler={profileHandler}
       />
-      <div className="flex justify-center w-full">
-        <UsersStatus users={users} user={user} />
-      </div>
+      <Switch>
+        <PrivateRoute path="/dashboard/game" component={Game} />
+        <PrivateRoute path="/dashboard/profile" component={Profile} />
+        <PrivateRoute path="/" component={Main} />
+      </Switch>
     </div>
   );
 };

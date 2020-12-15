@@ -15,6 +15,8 @@ const UsersStatus: React.FC<Props> = props => {
           if (item._id !== user._id) return <User key={item.id} username={item.fullName} status={item.status} />;
           return null;
         })}
+
+      {users.length === 1 && users[0]._id === user._id && <div> No user online </div>}
     </div>
   );
 };
