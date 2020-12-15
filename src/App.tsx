@@ -36,7 +36,7 @@ const App: React.FC = () => {
         setIsLoading(false);
       };
       callMe();
-    }
+    } else setIsLoading(false);
   }, [token, dispatch]);
 
   return (
