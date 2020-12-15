@@ -33,7 +33,7 @@ const Dashboard: React.FC = () => {
         profileHandler={profileHandler}
       />
       <Switch>
-        <PrivateRoute path="/dashboard/game" component={Game} />
+        <PrivateRoute path="/dashboard/game/:id" component={Game} />
         <PrivateRoute path="/dashboard/profile" component={Profile} />
         <PrivateRoute path="/" component={Main} />
       </Switch>

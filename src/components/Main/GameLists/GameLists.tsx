@@ -8,17 +8,23 @@ interface Props {
 
 const GameLists: React.FC<Props> = props => {
   const { data } = props;
+  console.log(data);
+
   return (
     <div className="w-full">
       <List
         grid={{ gutter: 16, column: 4 }}
         pagination={{ defaultPageSize: 8 }}
         dataSource={data}
-        renderItem={item => (
-          <List.Item>
-            <Board item={item} />
-          </List.Item>
-        )}
+        renderItem={item => {
+          // console.log(item);
+
+          return (
+            <List.Item>
+              <Board item={item} />
+            </List.Item>
+          );
+        }}
       />
     </div>
   );
