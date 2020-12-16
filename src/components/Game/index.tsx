@@ -29,20 +29,21 @@ const Game: React.FC = () => {
     socket.emit('sendMessage', { gameId: id, message: 'hello' });
   };
   return (
-    <div className="flex flex-row p-10">
-      <div style={{ flex: 0.2 }}>History</div>
-      <div style={{ flex: 0.8 }} className="flex flex-col justify-between">
-        <BoardGame />
-        <div className="flex flex-row justify-between items-center my-10">
-          <Host />
-          <span>-</span>
-          <Guest />
+    <div className="flex flex-col p-10">
+      <div className="flex flex-row">
+        <div style={{ flex: 0.8 }} className="flex flex-col justify-between">
+          <BoardGame />
         </div>
-        <Button onClick={() => sendNewMessage()}>New message</Button>
+        <div style={{ flex: 0.2 }}>
+          <Chat />
+        </div>
       </div>
-      <div style={{ flex: 0.2 }}>
-        <Chat />
+      <div className="flex flex-row justify-between items-center my-10">
+        <Host />
+        <span>-</span>
+        <Guest />
       </div>
+      <Button onClick={() => sendNewMessage()}>New message</Button>
     </div>
   );
 };

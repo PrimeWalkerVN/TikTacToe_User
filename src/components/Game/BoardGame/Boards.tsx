@@ -2,9 +2,9 @@ import React from 'react';
 import Square from './Square';
 
 const Boards = (props: any) => {
-  const { squares, numRow, numCol } = props;
+  const { squares, numRow, numCol, onClick } = props;
 
-  const renderSquare = (i: any, key: any) => <Square key={key} value={squares[i]} />;
+  const renderSquare = (i: any, key: any) => <Square onClick={() => onClick(i)} key={key} value={squares[i]} />;
 
   const renderBoard = () => {
     const size = numRow * numCol;
