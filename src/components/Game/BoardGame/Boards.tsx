@@ -9,10 +9,9 @@ const Boards = (props: any) => {
   );
 
   const renderBoard = () => {
-    const size = numRow * numCol;
-    const board = Array(size).fill(null);
+    const board = Array(numCol).fill(null);
     for (let i = 0; i < numCol; i++) {
-      const rowsSquare = Array(size).fill(null);
+      const rowsSquare = Array(numRow).fill(null);
       for (let j = 0; j < numRow; j++) {
         const squareKey = i * numRow + j;
         rowsSquare.push(renderSquare(i, j, squareKey));

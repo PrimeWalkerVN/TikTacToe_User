@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Socket from '../../socket/socket';
 import BoardGame from './BoardGame/BoardGame';
@@ -11,12 +11,17 @@ const Game: React.FC = () => {
   const socket: any = Socket.getInstance();
   const TOKEN = localStorage.getItem('access_token');
   const { id } = useParams<{ id: string }>();
-  socket.emit('joinGame', { token: TOKEN, gameId: id });
+  const [host, setHost] = useState(null);
+  const [guest, setGuest] = useState(null);
   useEffect(() => {
     socket.on('guestJoined', (data: any) => {
-      console.log(data);
+      setHost(data.host);
+      setGuest(data.guest);
     });
   }, [socket]);
+  useEffect(() => {
+    socket.emit('joinGame', { token: TOKEN, gameId: id });
+  }, [id]);
 
   return (
     <div className="flex flex-col p-10">
@@ -39,9 +44,9 @@ const Game: React.FC = () => {
               </button>
             </div>
             <div className="flex flex-row justify-between items-center px-10" style={{ flex: 0.8 }}>
-              <Host />
+              <Host item={host} />
               <span>-</span>
-              <Guest />
+              <Guest item={guest} />
             </div>
           </div>
         </div>

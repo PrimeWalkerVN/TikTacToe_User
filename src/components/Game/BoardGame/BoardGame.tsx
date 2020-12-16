@@ -10,6 +10,7 @@ const BoardGame = () => {
       .map(() => new Array(ncols).fill(null))
   );
   const [xIsNext, setXIsNext] = useState(true);
+
   const handleClick = (i: any, j: any) => {
     if (squares[i][j] !== null) return;
     const newSquares = [...squares];
