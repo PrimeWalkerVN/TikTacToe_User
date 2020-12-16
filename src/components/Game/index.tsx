@@ -1,4 +1,3 @@
-import { Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Socket from '../../socket/socket';
@@ -21,7 +20,7 @@ const Game: React.FC = () => {
   }, [socket]);
   useEffect(() => {
     socket.emit('joinGame', { token: TOKEN, gameId: id });
-  }, [id]);
+  }, [id, socket, TOKEN]);
 
   return (
     <div className="flex flex-col p-10">
