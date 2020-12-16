@@ -24,10 +24,10 @@ const Game: React.FC = () => {
     console.log(data.message);
   });
 
-  const sendNewMessage = () => {
-    // send message to room
-    socket.emit('sendMessage', { gameId: id, message: 'hello' });
-  };
+  // const sendNewMessage = () => {
+  //   // send message to room
+  //   socket.emit('sendMessage', { gameId: id, message: 'hello' });
+  // };
   return (
     <div className="flex flex-col p-10">
       <div className="flex flex-row">

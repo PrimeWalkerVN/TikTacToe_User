@@ -1,5 +1,9 @@
 import { Avatar, Button, Comment, Form, Input, List } from 'antd';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
+import { RootState } from '../../../types/Reducer';
+import Socket from '../../../socket/socket';
 
 const { TextArea } = Input;
 interface ChatType {
@@ -11,8 +15,12 @@ interface ChatType {
 const Chat = () => {
   const [chats, setChats] = useState<ChatType[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const { id } = useParams<{ id: string }>();
   const [value, setValue] = useState('');
   let messageEnd: any = useRef(null);
+  const socket: any = Socket.getInstance();
+  const user: any = useSelector((state: RootState) => state.user.user);
+  const TOKEN = localStorage.getItem('access_token');
 
   const CommentList = ({ comments }: any) => (
     <List
@@ -23,8 +31,15 @@ const Chat = () => {
     />
   );
   useEffect(() => {
+    socket.emit('joinGame', { token: TOKEN, gameId: id });
+
     messageEnd.scrollIntoView({ behavior: 'smooth' });
-  }, [chats]);
+  }, [chats, socket]);
+
+  socket.on('newMessage', (data: any) => {
+    setChats([...chats, data.message]);
+  });
+
   const handleSubmit = () => {
     if (!value) {
       return;
@@ -35,15 +50,13 @@ const Chat = () => {
     setTimeout(() => {
       setSubmitting(false);
       setValue('');
-      setChats([
-        ...chats,
-        {
-          author: 'Han Solo',
-          avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          content: <p>{value}</p>,
-          datetime: 'Now'
-        }
-      ]);
+      const newMessage = {
+        author: user.fullName,
+        avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+        content: value,
+        datetime: 'Now'
+      };
+      socket.emit('sendMessage', { gameId: id, newMessage });
     }, 1000);
   };
 
