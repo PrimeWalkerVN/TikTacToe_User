@@ -12,7 +12,7 @@ const Boards = (props: any) => {
     for (let i = 0; i < numCol; i++) {
       const rowsSquare = Array(size).fill(null);
       for (let j = 0; j < numRow; j++) {
-        const squareKey = i * size + j;
+        const squareKey = i * numRow + j;
         rowsSquare.push(renderSquare(squareKey, squareKey));
       }
       board.push(

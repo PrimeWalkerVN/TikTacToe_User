@@ -7,7 +7,7 @@ const BoardGame = () => {
   const [squares, setSquares] = useState(Array(numRow * numCol).fill(null));
   const [xIsNext, setXIsNext] = useState(true);
   const handleClick = (i: any) => {
-    if (squares[i] !== undefined) return;
+    if (squares[i] !== null) return;
     const newSquares = squares.slice();
     if (xIsNext) newSquares[i] = 'X';
     else newSquares[i] = 'O';
