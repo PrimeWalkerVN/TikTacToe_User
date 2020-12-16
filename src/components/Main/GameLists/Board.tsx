@@ -3,6 +3,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import tictac from '../../../assets/images/tictactoe.png';
 import gamesApi from '../../../api/gameApi';
+import Notification from '../../common/Notification';
 
 interface Props {
   item: any;
@@ -20,7 +21,7 @@ const Board: React.FC<Props> = props => {
         history.push(`/dashboard/game/${item.gameId}`);
       }
     } catch (err) {
-      console.log(err);
+      Notification('error', 'Error', err.message);
     }
   };
 

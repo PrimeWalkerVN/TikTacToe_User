@@ -30,7 +30,7 @@
   },
   "scripts": {
     "start": "npm run build:css && react-scripts start",
-    "build": "npm run build:css && react-scripts build",
+    "build": "CI='' npm run build:css && react-scripts build",
     "build:css": "postcss src/assets/styles/tailwind.css -o src/assets/styles/main.css",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
