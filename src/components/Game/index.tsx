@@ -26,7 +26,7 @@ const Game: React.FC = () => {
     <div className="flex flex-col p-10">
       <div className="flex flex-row">
         <div style={{ flex: 0.8 }} className="flex flex-col justify-between">
-          <BoardGame />
+          <BoardGame host={host} guest={guest} />
           <div className="flex flex-row items-center my-10">
             <div style={{ flex: 0.2 }} className="flex flex-row justify-between">
               <button
