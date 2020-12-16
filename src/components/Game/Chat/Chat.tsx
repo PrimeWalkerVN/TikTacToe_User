@@ -1,9 +1,8 @@
 import { Avatar, Button, Comment, Form, Input, List } from 'antd';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
-import { RootState } from '../../../types/Reducer';
+import { useSelector } from 'react-redux';
 import Socket from '../../../socket/socket';
+import { RootState } from '../../../types/Reducer';
 
 const { TextArea } = Input;
 interface ChatType {
@@ -12,10 +11,10 @@ interface ChatType {
   content: any;
   datetime: any;
 }
-const Chat = () => {
+const Chat = (props: any) => {
   const [chats, setChats] = useState<ChatType[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const { id } = useParams<{ id: string }>();
+  const { roomId } = props;
   const [value, setValue] = useState('');
   let messageEnd: any = useRef(null);
   const socket: any = Socket.getInstance();
@@ -53,7 +52,7 @@ const Chat = () => {
         content: value,
         datetime: 'Now'
       };
-      socket.emit('sendMessage', { gameId: id, newMessage });
+      socket.emit('sendMessage', { gameId: roomId, newMessage });
     }, 1000);
   };
 

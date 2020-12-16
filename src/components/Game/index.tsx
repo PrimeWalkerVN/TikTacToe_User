@@ -12,22 +12,12 @@ const Game: React.FC = () => {
   const TOKEN = localStorage.getItem('access_token');
   const { id } = useParams<{ id: string }>();
   socket.emit('joinGame', { token: TOKEN, gameId: id });
-
   useEffect(() => {
     socket.on('guestJoined', (data: any) => {
-      // host, guest info
       console.log(data);
     });
   }, [socket]);
 
-  socket.on('newMessage', (data: any) => {
-    console.log(data.message);
-  });
-
-  // const sendNewMessage = () => {
-  //   // send message to room
-  //   socket.emit('sendMessage', { gameId: id, message: 'hello' });
-  // };
   return (
     <div className="flex flex-col p-10">
       <div className="flex flex-row">
@@ -56,7 +46,7 @@ const Game: React.FC = () => {
           </div>
         </div>
         <div style={{ flex: 0.2 }}>
-          <Chat />
+          <Chat roomId={id} />
         </div>
       </div>
     </div>
