@@ -30,16 +30,6 @@ const Main = () => {
     socket.on('newGameCreated', (data: any) => {
       setGames(data);
     });
-
-    window.addEventListener('beforeunload', ev => {
-      ev.preventDefault();
-      return socket.emit('logout', { token: TOKEN });
-    });
-
-    return () => {
-      socket.emit('logout', { token: TOKEN });
-      socket.disconnect();
-    };
   }, [TOKEN, socket]);
 
   const createNewGame = async () => {

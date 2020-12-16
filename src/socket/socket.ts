@@ -7,7 +7,7 @@ interface SocketType {
   openConnect: any;
   getInstance: any;
 }
-const Socket = {
+const Socket: SocketType = {
   openConnect: () => {
     instance = io(ENDPOINT);
   },

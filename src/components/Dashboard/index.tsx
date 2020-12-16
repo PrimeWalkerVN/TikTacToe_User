@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, useHistory } from 'react-router-dom';
 import { logout } from '../../redux/reducers/userReducer';
@@ -15,8 +15,12 @@ const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const user: any = useSelector((state: RootState) => state.user.user);
   const history = useHistory();
+  const TOKEN = localStorage.getItem('access_token');
+  Socket.openConnect();
+  const socket = Socket.getInstance();
   const logoutHandler = () => {
     dispatch(logout());
+    socket.emit('logout', { token: TOKEN });
   };
   const profileHandler = () => {
     history.push('/dashboard/profile');
@@ -24,8 +28,13 @@ const Dashboard: React.FC = () => {
   const redirectHomeHandler = () => {
     history.push('/dashboard');
   };
-  Socket.openConnect();
 
+  useEffect(() => {
+    window.addEventListener('beforeunload', ev => {
+      ev.preventDefault();
+      return socket.emit('logout', { token: TOKEN });
+    });
+  }, [TOKEN, socket]);
   return (
     <div className="w-full">
       <Header
