@@ -2,15 +2,19 @@ import React, { useState } from 'react';
 import Boards from './Boards';
 
 const BoardGame = () => {
-  const numRow = 20;
-  const numCol = 15;
-  const [squares, setSquares] = useState(Array(numRow * numCol).fill(null));
+  const nrows = 20;
+  const ncols = 15;
+  const [squares, setSquares] = useState(
+    Array(nrows)
+      .fill(0)
+      .map(() => new Array(ncols).fill(null))
+  );
   const [xIsNext, setXIsNext] = useState(true);
-  const handleClick = (i: any) => {
-    if (squares[i] !== null) return;
-    const newSquares = squares.slice();
-    if (xIsNext) newSquares[i] = 'X';
-    else newSquares[i] = 'O';
+  const handleClick = (i: any, j: any) => {
+    if (squares[i][j] !== null) return;
+    const newSquares = [...squares];
+    if (xIsNext) newSquares[i][j] = 'X';
+    else newSquares[i][j] = 'O';
 
     setXIsNext(!xIsNext);
     setSquares(newSquares);
@@ -24,7 +28,7 @@ const BoardGame = () => {
         History
       </div>
       <div style={{ flex: 0.8 }} className="flex justify-center">
-        <Boards squares={squares} numCol={numCol} numRow={numRow} onClick={handleClick} />
+        <Boards squares={squares} numCol={ncols} numRow={nrows} onClick={handleClick} />
       </div>
     </div>
   );

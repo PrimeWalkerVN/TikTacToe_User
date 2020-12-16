@@ -4,7 +4,9 @@ import Square from './Square';
 const Boards = (props: any) => {
   const { squares, numRow, numCol, onClick } = props;
 
-  const renderSquare = (i: any, key: any) => <Square onClick={() => onClick(i)} key={key} value={squares[i]} />;
+  const renderSquare = (i: any, j: any, key: any) => (
+    <Square onClick={() => onClick(i, j)} key={key} value={squares[i][j]} />
+  );
 
   const renderBoard = () => {
     const size = numRow * numCol;
@@ -13,7 +15,7 @@ const Boards = (props: any) => {
       const rowsSquare = Array(size).fill(null);
       for (let j = 0; j < numRow; j++) {
         const squareKey = i * numRow + j;
-        rowsSquare.push(renderSquare(squareKey, squareKey));
+        rowsSquare.push(renderSquare(i, j, squareKey));
       }
       board.push(
         <div className="flex flex-row" key={i}>

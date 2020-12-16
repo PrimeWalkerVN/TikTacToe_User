@@ -20,7 +20,6 @@ const Chat = () => {
   let messageEnd: any = useRef(null);
   const socket: any = Socket.getInstance();
   const user: any = useSelector((state: RootState) => state.user.user);
-  const TOKEN = localStorage.getItem('access_token');
 
   const CommentList = ({ comments }: any) => (
     <List
@@ -31,8 +30,6 @@ const Chat = () => {
     />
   );
   useEffect(() => {
-    socket.emit('joinGame', { token: TOKEN, gameId: id });
-
     messageEnd.scrollIntoView({ behavior: 'smooth' });
   }, [chats, socket]);
 
