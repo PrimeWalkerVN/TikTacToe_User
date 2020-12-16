@@ -19,7 +19,7 @@ const BoardGame = () => {
     <div className="flex flex-row justify-center w-full">
       <div
         style={{ flex: 0.2 }}
-        className="flex flex-col justify-between rounded-lg shadow-lg p-2 chat-panel max-w-sm "
+        className="flex flex-col justify-between rounded-lg shadow-lg p-2 history-panel max-w-sm "
       >
         History
       </div>

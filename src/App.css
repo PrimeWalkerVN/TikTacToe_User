@@ -18,8 +18,12 @@
 }
 
 .chat-panel {
-    height: 35rem;
-    max-height: 35rem;
+    height: 45rem;
+    max-height: 45rem;
+}
+.history-panel {
+    height: 30rem;
+    max-height: 30rem;
 }
 
 .square {

@@ -33,17 +33,32 @@ const Game: React.FC = () => {
       <div className="flex flex-row">
         <div style={{ flex: 0.8 }} className="flex flex-col justify-between">
           <BoardGame />
+          <div className="flex flex-row items-center my-10">
+            <div style={{ flex: 0.2 }} className="flex flex-row justify-between">
+              <button
+                type="button"
+                className=" w-32 h-24 inline-block px-6 py-2 text-2xl font-bold leading-6 text-center text-white uppercase transition bg-blue-700 rounded shadow ripple hover:shadow-lg hover:bg-blue-800 focus:outline-none"
+              >
+                Start
+              </button>
+              <button
+                type="button"
+                className="w-32 h-24 inline-block px-6 py-2 text-2xl font-bold leading-6 text-center text-white uppercase transition bg-red-500 rounded shadow ripple hover:shadow-lg hover:bg-red-600 focus:outline-none"
+              >
+                Leave
+              </button>
+            </div>
+            <div className="flex flex-row justify-between items-center px-10" style={{ flex: 0.8 }}>
+              <Host />
+              <span>-</span>
+              <Guest />
+            </div>
+          </div>
         </div>
         <div style={{ flex: 0.2 }}>
           <Chat />
         </div>
       </div>
-      <div className="flex flex-row justify-between items-center my-10">
-        <Host />
-        <span>-</span>
-        <Guest />
-      </div>
-      <Button onClick={() => sendNewMessage()}>New message</Button>
     </div>
   );
 };
