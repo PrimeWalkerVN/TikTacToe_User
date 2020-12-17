@@ -18,11 +18,18 @@ const BoardGame = (props: ComponentProps) => {
   const user: any = useSelector((state: RootState) => state.user.user);
   const socket: any = Socket.getInstance();
   const [gameData, setGameData] = useState([]);
+  const [isFinish, setIsFinish] = useState(false);
+
+  const nrows = 20;
+  const ncols = 15;
 
   const [xIsNext, setXIsNext] = useState(false);
   const [turn, setTurn] = useState('O');
+  const [squares, setSquares] = useState(Array.from({ length: nrows }, () => Array.from({ length: ncols }, () => '')));
 
   useEffect(() => {
+    // console.log('render useEffect');
+
     if (host) {
       if (host._id === user._id) setTurn('O');
     }
@@ -30,21 +37,20 @@ const BoardGame = (props: ComponentProps) => {
     if (guest) {
       if (guest._id === user._id) setTurn('X');
       newGame(gameData, 'O', true, false);
+    } else {
+      const squaresData = Array(nrows)
+        .fill(0)
+        .map(() => new Array(ncols).fill(null));
+      setSquares(squaresData);
     }
-  }, [host, guest]);
-
-  const nrows = 20;
-  const ncols = 15;
-  const [squares, setSquares] = useState(
-    Array(nrows)
-      .fill(0)
-      .map(() => new Array(ncols).fill(null))
-  );
+  }, [host, guest, user._id, gameData]);
 
   socket.on('newPlay', (data: any) => {
+    // console.log(`new play ${data.position}`);
+
     if (data.position.turn === 'X') setXIsNext(false);
     else setXIsNext(true);
-    setGameData(gameData.concat(data.position));
+    // setGameData(gameData.concat(data.position));
 
     const { x } = data.position;
     const { y } = data.position;
@@ -57,7 +63,11 @@ const BoardGame = (props: ComponentProps) => {
     setSquares(newSquares);
   });
 
-  const handleClick = (i: any, j: any) => {
+  const handleWin = (winLine: any) => {
+    // socket.emit('finishGame', {winLine});
+  };
+
+  const handleClick = async (i: any, j: any) => {
     const value = xIsNext ? 'X' : 'O';
     if (value !== turn) return;
 
@@ -72,7 +82,10 @@ const BoardGame = (props: ComponentProps) => {
     const position = { turn, x: i, y: j };
     socket.emit('play', { gameId: id, position });
     setTurn(value);
-    play(i, j);
+    const playRes = await play(i, j);
+    if (playRes) {
+      handleWin(playRes);
+    }
   };
   return (
     <div className="flex flex-row justify-center w-full">

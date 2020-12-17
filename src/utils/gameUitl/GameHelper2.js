@@ -21,6 +21,8 @@ export function newGame(gameData, startTurn, gtFiveConfig, blockTwoSideConfig) {
   turn = startTurn;
   gtFive = gtFiveConfig;
   blockTwoSide = blockTwoSideConfig;
+
+  return matrix;
 }
 
 export function setTurn(newTurn) {
