@@ -78,6 +78,7 @@ const BoardGame = (props: ComponentProps) => {
 
   const handleClick = async (i: any, j: any) => {
     if (guest === null) return;
+    if (isFinish) return;
     const value = xIsNext ? 'X' : 'O';
     if (value !== turn) return;
 
