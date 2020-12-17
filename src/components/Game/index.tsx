@@ -20,7 +20,7 @@ const Game: React.FC = () => {
   }, [socket]);
   useEffect(() => {
     socket.emit('joinGame', { token: TOKEN, gameId: id });
-  }, [id, socket, TOKEN]);
+  }, [socket, TOKEN, id]);
 
   return (
     <div className="flex flex-col p-10">

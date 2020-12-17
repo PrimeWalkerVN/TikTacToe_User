@@ -2,11 +2,18 @@ import React from 'react';
 import Square from './Square';
 
 const Boards = (props: any) => {
-  const { squares, numRow, numCol, onClick } = props;
+  const { squares, numRow, numCol, onClick, winning } = props;
 
-  const renderSquare = (i: any, j: any, key: any) => (
-    <Square onClick={() => onClick(i, j)} key={key} value={squares[i][j]} />
-  );
+  const checkWin = (i: any, j: any) => {
+    if (winning === null) return false;
+    return winning.some((item: any) => {
+      return item.x === i && item.y === j;
+    });
+  };
+  const renderSquare = (i: any, j: any, key: any) => {
+    const win = checkWin(i, j);
+    return <Square isWinning={win} onClick={() => onClick(i, j)} key={key} value={squares[i][j]} />;
+  };
 
   const renderBoard = () => {
     const board = Array(numCol).fill(null);

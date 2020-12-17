@@ -3,14 +3,17 @@ import React from 'react';
 interface Props {
   value: any;
   onClick: any;
+  isWinning: any;
 }
 
 const Square: React.FC<Props> = props => {
-  const { value, onClick } = props;
+  const { value, onClick, isWinning } = props;
   return (
     <button
       type="button"
-      className={`border-2 border-black w-10 h-10 font-bold text-2xl square ${value === 'X' ? 'isX' : 'isO'}`}
+      className={`border-2 border-black w-10 h-10 font-bold text-2xl square ${value === 'X' ? 'isX' : 'isO'} ${
+        isWinning && 'winning'
+      }`}
       onClick={onClick}
     >
       {value}

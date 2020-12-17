@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { RootState } from '../../../types/Reducer';
-import Boards from './Boards';
 import Socket from '../../../socket/socket';
-
-import { newGame, setTurn, play, matrixGame } from '../../../utils/gameUitl/GameHelper2';
+import { RootState } from '../../../types/Reducer';
+import { newGame, play } from '../../../utils/gameUitl/GameHelper2';
+import Boards from './Boards';
 
 interface ComponentProps {
   host: any;
@@ -18,6 +17,7 @@ const BoardGame = (props: ComponentProps) => {
   const user: any = useSelector((state: RootState) => state.user.user);
   const socket: any = Socket.getInstance();
   const [gameData, setGameData] = useState([]);
+  const [winning, setWinning] = useState(null);
   const [isFinish, setIsFinish] = useState(false);
 
   const nrows = 20;
@@ -28,8 +28,6 @@ const BoardGame = (props: ComponentProps) => {
   const [squares, setSquares] = useState(Array.from({ length: nrows }, () => Array.from({ length: ncols }, () => '')));
 
   useEffect(() => {
-    // console.log('render useEffect');
-
     if (host) {
       if (host._id === user._id) setTurn('O');
     }
@@ -43,31 +41,43 @@ const BoardGame = (props: ComponentProps) => {
         .map(() => new Array(ncols).fill(null));
       setSquares(squaresData);
     }
-  }, [host, guest, user._id, gameData]);
+  }, [host, guest, user, gameData]);
 
-  socket.on('newPlay', (data: any) => {
-    // console.log(`new play ${data.position}`);
+  useEffect(() => {
+    socket.on('newPlay', (data: any) => {
+      if (data.position.turn === 'X') setXIsNext(false);
+      else setXIsNext(true);
+      // setGameData(gameData.concat(data.position));
 
-    if (data.position.turn === 'X') setXIsNext(false);
-    else setXIsNext(true);
-    // setGameData(gameData.concat(data.position));
+      const { x } = data.position;
+      const { y } = data.position;
+      const { turn } = data.position;
 
-    const { x } = data.position;
-    const { y } = data.position;
-    const { turn } = data.position;
-
-    if (squares[x][y] !== null) return;
-    const newSquares = [...squares];
-    newSquares[x][y] = turn;
-    setXIsNext(!xIsNext);
-    setSquares(newSquares);
-  });
-
+      if (squares[x][y] !== null) return;
+      const newSquares = [...squares];
+      newSquares[x][y] = turn;
+      setXIsNext(!xIsNext);
+      setSquares(newSquares);
+    });
+  }, [socket, squares, xIsNext]);
+  useEffect(() => {
+    socket.on('gameFinished', (data: any) => {
+      setIsFinish(true);
+      setWinning(data.winnerLine);
+    });
+  }, [socket, host, guest]);
   const handleWin = (winLine: any) => {
-    // socket.emit('finishGame', {winLine});
+    const data = {
+      gameId: id,
+      winner: host._id,
+      loser: guest._id,
+      winnerLine: winLine
+    };
+    socket.emit('finishGame', data);
   };
 
   const handleClick = async (i: any, j: any) => {
+    if (guest === null) return;
     const value = xIsNext ? 'X' : 'O';
     if (value !== turn) return;
 
@@ -96,7 +106,7 @@ const BoardGame = (props: ComponentProps) => {
         History
       </div>
       <div style={{ flex: 0.8 }} className="flex justify-center">
-        <Boards squares={squares} numCol={ncols} numRow={nrows} onClick={handleClick} />
+        <Boards winning={winning} squares={squares} numCol={ncols} numRow={nrows} onClick={handleClick} />
       </div>
     </div>
   );

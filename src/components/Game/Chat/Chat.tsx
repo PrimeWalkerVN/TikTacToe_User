@@ -30,11 +30,13 @@ const Chat = (props: any) => {
   );
   useEffect(() => {
     messageEnd.scrollIntoView({ behavior: 'smooth' });
-  }, [chats, socket]);
+  }, [chats]);
 
-  socket.on('newMessage', (data: any) => {
-    setChats([...chats, data.message]);
-  });
+  useEffect(() => {
+    socket.on('newMessage', (data: any) => {
+      setChats(oldChats => [...oldChats, data.message]);
+    });
+  }, [roomId, socket]);
 
   const handleSubmit = () => {
     if (!value) {

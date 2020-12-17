@@ -16,8 +16,6 @@ const GameLists: React.FC<Props> = props => {
         pagination={{ defaultPageSize: 8 }}
         dataSource={data}
         renderItem={item => {
-          // console.log(item);
-
           return (
             <List.Item>
               <Board item={item} />
