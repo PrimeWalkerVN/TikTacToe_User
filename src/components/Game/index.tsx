@@ -7,20 +7,19 @@ import Guest from './Players/Guest';
 import Host from './Players/Host';
 
 const Game: React.FC = () => {
-  const socket: any = Socket.getInstance();
-  const TOKEN = localStorage.getItem('access_token');
   const { id } = useParams<{ id: string }>();
   const [host, setHost] = useState(null);
   const [guest, setGuest] = useState(null);
   useEffect(() => {
-    socket.on('guestJoined', (data: any) => {
+    Socket.subGuestJoined((err: any, data: any) => {
+      if (err) return;
       setHost(data.host);
       setGuest(data.guest);
     });
-  }, [socket]);
+  }, []);
   useEffect(() => {
-    socket.emit('joinGame', { token: TOKEN, gameId: id });
-  }, [socket, TOKEN, id]);
+    Socket.joinGame(id);
+  }, [id]);
 
   return (
     <div className="flex flex-col p-10">

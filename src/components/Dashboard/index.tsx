@@ -15,12 +15,10 @@ const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const user: any = useSelector((state: RootState) => state.user.user);
   const history = useHistory();
-  const TOKEN = localStorage.getItem('access_token');
   Socket.openConnect();
-  const socket = Socket.getInstance();
   const logoutHandler = () => {
     dispatch(logout());
-    socket.emit('logout', { token: TOKEN });
+    Socket.logout();
   };
   const profileHandler = () => {
     history.push('/dashboard/profile');
@@ -32,9 +30,13 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     window.addEventListener('beforeunload', ev => {
       ev.preventDefault();
-      return socket.emit('logout', { token: TOKEN });
+      return Socket.logout();
     });
-  }, [TOKEN, socket]);
+    return () => {
+      Socket.logout();
+      Socket.disconnect();
+    };
+  }, []);
   return (
     <div className="w-full">
       <Header

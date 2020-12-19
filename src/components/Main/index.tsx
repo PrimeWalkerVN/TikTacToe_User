@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import gamesApi from '../../api/gameApi';
+import gameApi from '../../api/gameApi';
 import Socket from '../../socket/socket';
 import { RootState } from '../../types/Reducer';
 import Loading from '../common/Loading';
@@ -13,46 +13,55 @@ import UsersStatus from './UserStatus';
 const Main = () => {
   const history = useHistory();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const TOKEN = localStorage.getItem('access_token');
   const user: any = useSelector((state: RootState) => state.user.user);
   const [users, setUsers] = useState([]);
   const [games, setGames] = useState([]);
-  const socket: any = Socket.getInstance();
 
   useEffect(() => {
-    socket.emit('login', { token: TOKEN });
-
-    socket.on('list', (data: any) => {
+    Socket.login();
+    Socket.subListUser((err: any, data: any) => {
+      if (err) return;
       setUsers(data.listUsers);
       if (data.listGames) setGames(data.listGames);
     });
-
-    socket.on('newGameCreated', (data: any) => {
+    Socket.subNewCreatedGame((err: any, data: any) => {
+      if (err) return;
       setGames(data);
     });
-  }, [TOKEN, socket]);
+  }, []);
 
   const createNewGame = async () => {
     setIsLoading(true);
-    const params = { token: TOKEN };
+    const params = { host: user };
     try {
-      const res: any = await gamesApi.create(params);
-
-      socket.emit('joinRoom', { gameId: res.body.gameId.toString() });
-      socket.on('gameCreated', (data: any) => {
-        setIsLoading(false);
+      const res: any = await gameApi.create(params);
+      Socket.joinRoom(res.body.gameId.toString());
+      Socket.subCreatedGame((err: any, data: any) => {
+        if (err) return;
         history.push(`/dashboard/game/${data.gameId}`);
+        setIsLoading(false);
       });
     } catch (err) {
-      if (err.response.data.message) {
-        setIsLoading(false);
-        Notification('error', 'Error', err.response.data.message);
-      }
+      setIsLoading(false);
+      if (err.response) Notification('error', 'Error', err.response.data.message);
+      else Notification('error', 'Error', err.message);
     }
   };
 
   const handleSubmit = () => {
     createNewGame();
+  };
+  const handleJoinGame = async (item: any) => {
+    const params = { gameId: item.gameId };
+    try {
+      const res: any = await gameApi.joinGame(params);
+      if (res) {
+        history.push(`/dashboard/game/${item.gameId}`);
+      }
+    } catch (err) {
+      if (err.response) Notification('error', 'Error', err.response.data.message);
+      else Notification('error', 'Error', err.message);
+    }
   };
   return (
     <div className="flex w-full h-screen flex-row justify-between p-10">
@@ -61,7 +70,7 @@ const Main = () => {
         <AddBoard handleSubmit={handleSubmit} />
       </div>
       <div className="main-lists p-10">
-        <GameLists data={games} />
+        <GameLists data={games} clickDetail={handleJoinGame} />
       </div>
       <div className="main-users flex flex-col items-end p-10">
         <UsersStatus users={users} user={user} />

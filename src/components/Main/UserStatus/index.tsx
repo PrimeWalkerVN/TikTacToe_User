@@ -12,7 +12,8 @@ const UsersStatus: React.FC<Props> = props => {
     <div className="flex flex-col">
       {users.length > 0 &&
         users.map((item: any) => {
-          if (item._id !== user._id) return <User key={item.id} username={item.fullName} status={item.status} />;
+          if (item._id !== user._id)
+            return <User key={item._id.toString()} username={item.fullName} status={item.status} />;
           return null;
         })}
 

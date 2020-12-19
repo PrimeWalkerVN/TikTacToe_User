@@ -25,13 +25,13 @@ const App: React.FC = () => {
     if (token) {
       const callMe = async () => {
         try {
-          const user = await usersApi.getMe();
-          if (user) {
-            dispatch(setUser(user));
+          const res = await usersApi.getMe();
+          if (res) {
+            dispatch(setUser(res.user));
             dispatch(setLogged(true));
           }
         } catch (e) {
-          Notification('error', 'Error', e.message);
+          Notification('error', 'Error', e.response.data.message);
         }
         setIsLoading(false);
       };

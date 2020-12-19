@@ -1,19 +1,19 @@
 import axiosClient from './axiosClient';
 
-interface typeUserApi {
+interface typeApi {
   create: any;
   joinGame: any;
 }
 
-const usersApi: typeUserApi = {
+const gameApi: typeApi = {
   create: (params: any) => {
     const url = '/games/';
     return axiosClient.post(url, params);
   },
   joinGame: (params: any) => {
-    const url = `/games/join-game/${params.gameId}`;
+    const url = `/games/join/${params.gameId}`;
     return axiosClient.post(url, params);
   }
 };
 
-export default usersApi;
+export default gameApi;

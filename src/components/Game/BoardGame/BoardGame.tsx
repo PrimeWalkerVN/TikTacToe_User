@@ -13,19 +13,18 @@ interface ComponentProps {
 
 const BoardGame = (props: ComponentProps) => {
   const { host, guest } = props;
-  const { id } = useParams<{ id: string }>();
-  const user: any = useSelector((state: RootState) => state.user.user);
-  const socket: any = Socket.getInstance();
+  const nrows: any = 20;
+  const ncols: any = 15;
+
   const [gameData, setGameData] = useState([]);
   const [winning, setWinning] = useState(null);
   const [isFinish, setIsFinish] = useState(false);
-
-  const nrows = 20;
-  const ncols = 15;
-
   const [xIsNext, setXIsNext] = useState(false);
   const [turn, setTurn] = useState('O');
   const [squares, setSquares] = useState(Array.from({ length: nrows }, () => Array.from({ length: ncols }, () => '')));
+
+  const { id } = useParams<{ id: string }>();
+  const user: any = useSelector((state: RootState) => state.user.user);
 
   useEffect(() => {
     if (host) {
@@ -44,10 +43,10 @@ const BoardGame = (props: ComponentProps) => {
   }, [host, guest, user, gameData]);
 
   useEffect(() => {
-    socket.on('newPlay', (data: any) => {
+    Socket.subNewPlay((err: any, data: any) => {
+      if (err) return;
       if (data.position.turn === 'X') setXIsNext(false);
       else setXIsNext(true);
-      // setGameData(gameData.concat(data.position));
 
       const { x } = data.position;
       const { y } = data.position;
@@ -59,13 +58,16 @@ const BoardGame = (props: ComponentProps) => {
       setXIsNext(!xIsNext);
       setSquares(newSquares);
     });
-  }, [socket, squares, xIsNext]);
+  }, [squares, xIsNext]);
   useEffect(() => {
-    socket.on('gameFinished', (data: any) => {
+    Socket.subGameFinished((err: any, data: any) => {
+      if (err) return;
       setIsFinish(true);
       setWinning(data.winnerLine);
+      const choose = false;
+      if (choose) resetData();
     });
-  }, [socket, host, guest]);
+  }, [host, guest]);
   const handleWin = (winLine: any) => {
     const data = {
       gameId: id,
@@ -73,7 +75,7 @@ const BoardGame = (props: ComponentProps) => {
       loser: guest._id,
       winnerLine: winLine
     };
-    socket.emit('finishGame', data);
+    Socket.finishGame(data);
   };
 
   const handleClick = async (i: any, j: any) => {
@@ -91,12 +93,21 @@ const BoardGame = (props: ComponentProps) => {
     setSquares(newSquares);
 
     const position = { turn, x: i, y: j };
-    socket.emit('play', { gameId: id, position });
+    Socket.play(id, position);
     setTurn(value);
     const playRes = await play(i, j);
     if (playRes) {
       handleWin(playRes);
     }
+  };
+
+  const resetData = () => {
+    setGameData([]);
+    setWinning(null);
+    setIsFinish(false);
+    setXIsNext(false);
+    setTurn('O');
+    setSquares(Array.from({ length: nrows }, () => Array.from({ length: ncols }, () => '')));
   };
   return (
     <div className="flex flex-row justify-center w-full">

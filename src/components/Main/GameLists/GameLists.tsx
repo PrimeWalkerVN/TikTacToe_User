@@ -4,10 +4,11 @@ import Board from './Board';
 
 interface Props {
   data: any;
+  clickDetail: any;
 }
 
 const GameLists: React.FC<Props> = props => {
-  const { data } = props;
+  const { data, clickDetail } = props;
 
   return (
     <div className="w-full">
@@ -18,7 +19,7 @@ const GameLists: React.FC<Props> = props => {
         renderItem={item => {
           return (
             <List.Item>
-              <Board item={item} />
+              <Board item={item} clickDetail={clickDetail} />
             </List.Item>
           );
         }}

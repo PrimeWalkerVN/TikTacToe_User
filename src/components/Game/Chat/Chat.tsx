@@ -1,6 +1,7 @@
 import { Avatar, Button, Comment, Form, Input, List } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import moment from 'moment';
 import Socket from '../../../socket/socket';
 import { RootState } from '../../../types/Reducer';
 
@@ -17,7 +18,6 @@ const Chat = (props: any) => {
   const { roomId } = props;
   const [value, setValue] = useState('');
   let messageEnd: any = useRef(null);
-  const socket: any = Socket.getInstance();
   const user: any = useSelector((state: RootState) => state.user.user);
 
   const CommentList = ({ comments }: any) => (
@@ -33,10 +33,11 @@ const Chat = (props: any) => {
   }, [chats]);
 
   useEffect(() => {
-    socket.on('newMessage', (data: any) => {
+    Socket.subMessageToChat((err: any, data: any) => {
+      if (err) return;
       setChats(oldChats => [...oldChats, data.message]);
     });
-  }, [roomId, socket]);
+  }, [roomId]);
 
   const handleSubmit = () => {
     if (!value) {
@@ -44,7 +45,6 @@ const Chat = (props: any) => {
     }
 
     setSubmitting(true);
-
     setTimeout(() => {
       setSubmitting(false);
       setValue('');
@@ -52,9 +52,9 @@ const Chat = (props: any) => {
         author: user.fullName,
         avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
         content: value,
-        datetime: 'Now'
+        datetime: moment().fromNow()
       };
-      socket.emit('sendMessage', { gameId: roomId, newMessage });
+      Socket.sendMessage(roomId, newMessage);
     }, 1000);
   };
 
