@@ -7,6 +7,7 @@ let gtFive;
 let blockTwoSide;
 let winLine = [];
 
+//x row y column
 export function newGame(gameData, startTurn, gtFiveConfig, blockTwoSideConfig) {
   matrix = new Array(nrows).fill(0).map(() => new Array(ncols).fill(null));
   if (gameData) {
@@ -230,7 +231,7 @@ const checkTopRightToBottomLeft = (x, y) => {
       if (matrix[x - range][y + range] === turn) {
         count++;
         checked++;
-        arrayTracking.push({ x: x + range, y: y - range });
+        arrayTracking.push({ x: x - range, y: y - range });
       } else {
         canGoTopRight = false;
       }

@@ -1,21 +1,30 @@
-import { Button, Form, Input, Modal } from 'antd';
+import { Button, Form, Input, Modal, Alert } from 'antd';
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import usersApi from '../../api/userApi';
 import Loading from '../common/Loading';
+import Notification from '../common/Notification';
 
 const ActiveEmail = () => {
   const { search } = useLocation();
   const query = new URLSearchParams(search);
   const status = query.get('status') || 'expired';
-  console.log(status);
   const username = query.get('username');
   const [isLoading, setIsLoading] = useState(false);
   const [isModal, setIsModal] = useState(false);
+  const [errors, setErrors] = useState<string>('');
 
-  const sendAgain = (values: any) => {
-    console.log('send again');
-    console.log(values);
-    setIsModal(false);
+  const sendAgain = async (values: any) => {
+    setIsLoading(true);
+    try {
+      await usersApi.resendActiveEmail(values);
+      Notification('success', 'Send success!', 'Please check your email!');
+      setIsModal(false);
+    } catch (err) {
+      if (err.response) setErrors(err.response.data.message);
+      else setErrors('Something went wrong!');
+    }
+    setIsLoading(false);
   };
   return (
     <div className="w-full flex flex-col justify-center items-center h-screen">
@@ -65,6 +74,7 @@ const ActiveEmail = () => {
             >
               <Input />
             </Form.Item>
+            {errors && <Alert className="my-5" closable type="error" message="Error" description={errors} />}
           </Form>
         </div>
       </Modal>

@@ -1,4 +1,3 @@
-import ForgotPassword from '../components/auth/ForgotPassword';
 import axiosClient from './axiosClient';
 
 interface typeUserApi {
@@ -9,6 +8,7 @@ interface typeUserApi {
   updateProfile: any;
   forgotPassword: any;
   resetPassword: any;
+  resendActiveEmail: any;
 }
 const usersApi: typeUserApi = {
   login: (params: any) => {
@@ -33,11 +33,15 @@ const usersApi: typeUserApi = {
   },
   forgotPassword: (params: any) => {
     const url = '/users/forgot-password';
-    return axiosClient.get(url, params);
+    return axiosClient.post(url, params);
   },
   resetPassword: (params: any) => {
     const url = `/users/reset-password/${params.token}`;
     return axiosClient.post(url, { password: params.password });
+  },
+  resendActiveEmail: (params: any) => {
+    const url = `/users/resend-active-email`;
+    return axiosClient.post(url, params);
   }
 };
 
