@@ -51,7 +51,7 @@ const Login: React.FC = () => {
       history.push(query.next);
       Notification('success', 'Hi', res.user.fullName);
     } catch (err) {
-      setErrors(err.message);
+      if (err.response) setErrors(err.response.data.message);
     }
     setIsLoading(false);
   };
@@ -122,7 +122,9 @@ const Login: React.FC = () => {
             </a>
           </button>
         </div>
-
+        <Link className="font-bold" to="/forgot-password">
+          Forgot password!
+        </Link>
         <Link className="pb-5 font-bold" to="/register">
           If you don't have account? Register!
         </Link>

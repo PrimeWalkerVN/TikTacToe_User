@@ -1,3 +1,4 @@
+import ForgotPassword from '../components/auth/ForgotPassword';
 import axiosClient from './axiosClient';
 
 interface typeUserApi {
@@ -6,6 +7,8 @@ interface typeUserApi {
   register: any;
   loginWithGoogle: any;
   updateProfile: any;
+  forgotPassword: any;
+  resetPassword: any;
 }
 const usersApi: typeUserApi = {
   login: (params: any) => {
@@ -27,6 +30,14 @@ const usersApi: typeUserApi = {
   updateProfile: (params: any) => {
     const url = '/users/update-profile';
     return axiosClient.put(url, params);
+  },
+  forgotPassword: (params: any) => {
+    const url = '/users/forgot-password';
+    return axiosClient.get(url, params);
+  },
+  resetPassword: (params: any) => {
+    const url = `/users/reset-password/${params.token}`;
+    return axiosClient.post(url, { password: params.password });
   }
 };
 
