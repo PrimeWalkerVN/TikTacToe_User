@@ -30,29 +30,30 @@ const Main = () => {
     });
   }, []);
 
-  const createNewGame = async () => {
+  const createNewGame = async (values: any) => {
     setIsLoading(true);
-    const params = { host: user };
+    const params = { host: user, ...values };
     try {
       const res: any = await gameApi.create(params);
       Socket.joinRoom(res.body.gameId.toString());
       Socket.subCreatedGame((err: any, data: any) => {
         if (err) return;
         history.push(`/dashboard/game/${data.gameId}`);
-        setIsLoading(false);
       });
     } catch (err) {
-      setIsLoading(false);
       if (err.response) Notification('error', 'Error', err.response.data.message);
       else Notification('error', 'Error', err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleSubmit = () => {
-    createNewGame();
+  const handleSubmit = (values: any) => {
+    createNewGame(values);
   };
-  const handleJoinGame = async (item: any) => {
-    const params = { gameId: item.gameId };
+  const handleJoinGame = async (item: any, password: any) => {
+    const params = { gameId: item.gameId, password };
+    setIsLoading(true);
     try {
       const res: any = await gameApi.joinGame(params);
       if (res) {
@@ -61,6 +62,8 @@ const Main = () => {
     } catch (err) {
       if (err.response) Notification('error', 'Error', err.response.data.message);
       else Notification('error', 'Error', err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
