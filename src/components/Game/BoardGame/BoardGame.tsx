@@ -48,9 +48,7 @@ const BoardGame = (props: ComponentProps) => {
       if (data.position.turn === 'X') setXIsNext(false);
       else setXIsNext(true);
 
-      const { x } = data.position;
-      const { y } = data.position;
-      const { turn } = data.position;
+      const { x, y, turn } = data.position;
 
       if (squares[x][y] !== null) return;
       const newSquares = [...squares];

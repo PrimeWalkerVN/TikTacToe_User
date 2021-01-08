@@ -7,6 +7,7 @@ import { RootState } from '../../types/Reducer';
 import PrivateRoute from '../auth/PrivateRoute';
 import Header from '../common/Header';
 
+const ProfileAnotherUser = React.lazy(() => import('../ProfileAnotherUser'));
 const Game = React.lazy(() => import('../Game'));
 const Main = React.lazy(() => import('../Main'));
 const Profile = React.lazy(() => import('../Profile'));
@@ -17,8 +18,8 @@ const Dashboard: React.FC = () => {
   const history = useHistory();
   Socket.openConnect();
   const logoutHandler = () => {
-    dispatch(logout());
     Socket.logout();
+    dispatch(logout());
   };
   const profileHandler = () => {
     history.push('/dashboard/profile');
@@ -28,6 +29,7 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
+    Socket.login();
     window.addEventListener('beforeunload', ev => {
       ev.preventDefault();
       return Socket.logout();
@@ -49,6 +51,7 @@ const Dashboard: React.FC = () => {
       <Switch>
         <PrivateRoute path="/dashboard/game/:id" component={Game} />
         <PrivateRoute path="/dashboard/profile" component={Profile} />
+        <PrivateRoute path="/dashboard/profile/:username" component={ProfileAnotherUser} />
         <PrivateRoute path="/" component={Main} />
       </Switch>
     </div>

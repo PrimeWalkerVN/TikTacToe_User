@@ -8,6 +8,7 @@ import Loading from '../common/Loading';
 import Notification from '../common/Notification';
 import { AddBoard } from './AddBoard';
 import GameLists from './GameLists/GameLists';
+import LeaderBoard from './LeaderBoard';
 import UsersStatus from './UserStatus';
 
 const Main = () => {
@@ -69,13 +70,14 @@ const Main = () => {
   return (
     <div className="flex w-full h-screen flex-row justify-between p-10">
       {isLoading && <Loading />}
-      <div className="main-add">
+      <div className="main-add flex flex-col">
         <AddBoard handleSubmit={handleSubmit} />
+        <LeaderBoard />
       </div>
-      <div className="main-lists p-10">
+      <div className="main-lists p-5">
         <GameLists data={games} clickDetail={handleJoinGame} />
       </div>
-      <div className="main-users flex flex-col items-end p-10">
+      <div className="main-users flex flex-col items-end p-5">
         <UsersStatus users={users} user={user} />
       </div>
     </div>

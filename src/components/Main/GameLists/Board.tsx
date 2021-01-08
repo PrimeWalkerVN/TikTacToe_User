@@ -3,6 +3,7 @@ import { Card, Form, Input, Modal } from 'antd';
 import React, { useState } from 'react';
 import tictac from '../../../assets/images/tictactoe.png';
 
+const { Meta } = Card;
 interface Props {
   item: any;
   clickDetail: any;
@@ -11,6 +12,7 @@ const Board: React.FC<Props> = props => {
   const { item, clickDetail } = props;
   const [isModal, setIsModal] = useState(false);
   const onClickDetail = () => {
+    if (item.status === 'playing') return;
     if (item.password) {
       setIsModal(true);
     } else clickDetail(item);
@@ -30,8 +32,8 @@ const Board: React.FC<Props> = props => {
         title={
           // eslint-disable-next-line react/jsx-wrap-multilines
           <div className="flex justify-between items-center">
-            <div>#{item.gameId}</div>
-            <div>{item.name}</div>
+            <div className="text-base text-red-600">#{item.gameId}</div>
+            <div className="truncate mx-2 text-base">{item.name}</div>
             {item.password ? <LockOutlined /> : <UnlockOutlined />}
           </div>
         }
@@ -39,9 +41,9 @@ const Board: React.FC<Props> = props => {
         hoverable
         style={{ textAlign: 'center' }}
       >
-        <div className="w-full">
-          <img src={tictac} alt="tictactoe" className="object-contain h-32 w-64" />
-        </div>
+        <img src={tictac} alt="tictactoe" className="object-contain h-full w-full" />
+
+        <Meta className="pt-2" description={item.status.charAt(0).toUpperCase() + item.status.slice(1)} />
       </Card>
       <Modal
         visible={isModal}

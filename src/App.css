@@ -41,3 +41,16 @@
 .winning {
     background-color: yellow;
 }
+
+.custom-search > span > span > .ant-input-search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+   
+}
+.custom-search>span>span>.ant-btn-loading > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}

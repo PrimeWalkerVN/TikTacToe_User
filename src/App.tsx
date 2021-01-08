@@ -34,7 +34,7 @@ const App: React.FC = () => {
             dispatch(setLogged(true));
           }
         } catch (e) {
-          Notification('error', 'Error', e.response.data.message);
+          if (e.response) Notification('error', 'Error', e.response.data.message);
         }
         setIsLoading(false);
       };
