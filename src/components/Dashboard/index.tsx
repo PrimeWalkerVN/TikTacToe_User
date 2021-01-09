@@ -32,12 +32,12 @@ const Dashboard: React.FC = () => {
     Socket.login();
     window.addEventListener('beforeunload', ev => {
       ev.preventDefault();
-      return Socket.logout();
+
+      return () => {
+        Socket.logout();
+        Socket.disconnect();
+      };
     });
-    return () => {
-      Socket.logout();
-      Socket.disconnect();
-    };
   }, []);
   return (
     <div className="w-full">

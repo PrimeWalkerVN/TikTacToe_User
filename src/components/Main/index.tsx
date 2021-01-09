@@ -19,7 +19,6 @@ const Main = () => {
   const [games, setGames] = useState([]);
 
   useEffect(() => {
-    Socket.login();
     Socket.subListUser((err: any, data: any) => {
       if (err) return;
       setUsers(data.listUsers);

@@ -27,7 +27,9 @@ const GameLists: React.FC<Props> = props => {
       // have value
       setIsSearching(false);
       const res = data.filter(
-        (item: any) => item.id === debouncedSearchTerm || item.name.toLowerCase() === debouncedSearchTerm.toLowerCase()
+        (item: any) =>
+          item.gameId.toString() === debouncedSearchTerm ||
+          item.name.toLowerCase() === debouncedSearchTerm.toLowerCase()
       );
       setResult(res);
     } else {
