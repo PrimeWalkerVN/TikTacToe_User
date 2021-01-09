@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useBeforeunload } from 'react-beforeunload';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, useHistory } from 'react-router-dom';
 import { setRoomsAction } from '../../redux/reducers/roomReducer';
@@ -28,17 +29,19 @@ const Dashboard: React.FC = () => {
   const redirectHomeHandler = () => {
     history.push('/dashboard');
   };
-
+  useBeforeunload(async () => {
+    await Socket.logout();
+    await Socket.disconnect();
+  });
   useEffect(() => {
     Socket.login();
-    window.addEventListener('beforeunload', ev => {
-      ev.preventDefault();
-
-      return () => {
-        Socket.logout();
-        Socket.disconnect();
-      };
-    });
+    // window.addEventListener('beforeunload', (ev: any) => {
+    //   ev.preventDefault();
+    //   return () => {
+    //     Socket.logout();
+    //     Socket.disconnect();
+    //   };
+    // });
   }, []);
   useEffect(() => {
     Socket.subNewCreatedRoom((err: any, data: any) => {

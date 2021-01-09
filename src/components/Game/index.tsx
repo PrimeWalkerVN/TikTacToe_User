@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Tabs } from 'antd';
+import { useSelector } from 'react-redux';
 import Socket from '../../socket/socket';
 import BoardGame from './BoardGame/BoardGame';
 import Chat from './Chat/Chat';
@@ -8,11 +9,13 @@ import Player2 from './Players/Player2';
 import Player1 from './Players/Player1';
 import Viewers from './Viewers/Viewers';
 import Features from './Features.tsx/Features';
+import { RootState } from '../../types/Reducer';
 
 const Game: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   const { TabPane } = Tabs;
+  const user: any = useSelector((state: RootState) => state.user.user);
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
   const [viewers, setViewers] = useState([]);
@@ -70,7 +73,7 @@ const Game: React.FC = () => {
             <Chat roomId={id} />
           </TabPane>
           <TabPane tab="Viewers" key="2">
-            <Viewers />
+            <Viewers viewers={viewers} user={user} />
           </TabPane>
         </Tabs>
       </div>

@@ -10,7 +10,7 @@ import { AddBoard } from './AddBoard';
 import RoomLists from './RoomLists/RoomLists';
 import LeaderBoard from './LeaderBoard';
 import UsersStatus from './UserStatus';
-import { setRoomsAction } from '../../redux/reducers/roomReducer';
+import { setRoomsAction, setUsersOnline } from '../../redux/reducers/roomReducer';
 import matchApi from '../../api/matchApi';
 
 const Main = () => {
@@ -19,20 +19,22 @@ const Main = () => {
   const dispatch = useDispatch();
   const user: any = useSelector((state: RootState) => state.user.user);
   const roomData: any = useSelector((state: RootState) => state.room.rooms);
+  const usersOnline: any = useSelector((state: RootState) => state.room.usersOnline);
   const [users, setUsers] = useState([]);
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
     setRooms(roomData);
+    setUsers(usersOnline);
     Socket.subListUser((err: any, data: any) => {
       if (err) return;
-      setUsers(data.listUsers);
+      dispatch(setUsersOnline(data.listUsers));
       if (data.listRooms) {
         setRooms(data.listRooms);
         dispatch(setRoomsAction(data.listRooms));
       }
     });
-  }, [dispatch, roomData]);
+  }, [dispatch, roomData, usersOnline]);
 
   const createNewRoom = async (values: any) => {
     setIsLoading(true);
