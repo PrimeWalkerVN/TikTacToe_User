@@ -32,12 +32,12 @@ const Dashboard: React.FC = () => {
     Socket.login();
     window.addEventListener('beforeunload', ev => {
       ev.preventDefault();
-      return Socket.logout();
+
+      return () => {
+        Socket.logout();
+        Socket.disconnect();
+      };
     });
-    return () => {
-      Socket.logout();
-      Socket.disconnect();
-    };
   }, []);
   return (
     <div className="w-full">
@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
         profileHandler={profileHandler}
       />
       <Switch>
-        <PrivateRoute path="/dashboard/game/:id" component={Game} />
+        <PrivateRoute path="/dashboard/room/:id" component={Game} />
         <PrivateRoute path="/dashboard/profile" component={Profile} />
         <PrivateRoute path="/dashboard/profile/:username" component={ProfileAnotherUser} />
         <PrivateRoute path="/" component={Main} />

@@ -14,7 +14,7 @@ interface ComponentProps {
 const BoardGame = (props: ComponentProps) => {
   const { host, guest } = props;
   const nrows: any = 20;
-  const ncols: any = 15;
+  const ncols: any = 20;
 
   const [gameData, setGameData] = useState([]);
   const [winning, setWinning] = useState(null);
@@ -109,12 +109,6 @@ const BoardGame = (props: ComponentProps) => {
   };
   return (
     <div className="flex flex-row justify-center w-full">
-      <div
-        style={{ flex: 0.2 }}
-        className="flex flex-col justify-between rounded-lg shadow-lg p-2 history-panel max-w-sm "
-      >
-        History
-      </div>
       <div style={{ flex: 0.8 }} className="flex justify-center">
         <Boards winning={winning} squares={squares} numCol={ncols} numRow={nrows} onClick={handleClick} />
       </div>

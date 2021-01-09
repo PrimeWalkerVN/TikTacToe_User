@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Tabs } from 'antd';
 import Socket from '../../socket/socket';
 import BoardGame from './BoardGame/BoardGame';
 import Chat from './Chat/Chat';
-import Guest from './Players/Guest';
-import Host from './Players/Host';
+import Player2 from './Players/Player2';
+import Player1 from './Players/Player1';
+import Viewers from './Viewers/Viewers';
+import Features from './Features.tsx/Features';
 
 const Game: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+
+  const { TabPane } = Tabs;
   const [host, setHost] = useState(null);
   const [guest, setGuest] = useState(null);
   const [viewer, setViewer] = useState([]);
@@ -24,35 +29,37 @@ const Game: React.FC = () => {
   }, [id]);
 
   return (
-    <div className="flex flex-col p-10">
-      <div className="flex flex-row">
-        <div style={{ flex: 0.8 }} className="flex flex-col justify-between">
-          <BoardGame host={host} guest={guest} />
-          <div className="flex flex-row items-center my-10">
-            <div style={{ flex: 0.2 }} className="flex flex-row justify-between">
-              <button
-                type="button"
-                className=" w-32 h-24 inline-block px-6 py-2 text-2xl font-bold leading-6 text-center text-white uppercase transition bg-blue-700 rounded shadow ripple hover:shadow-lg hover:bg-blue-800 focus:outline-none"
-              >
-                Start
-              </button>
-              <button
-                type="button"
-                className="w-32 h-24 inline-block px-6 py-2 text-2xl font-bold leading-6 text-center text-white uppercase transition bg-red-500 rounded shadow ripple hover:shadow-lg hover:bg-red-600 focus:outline-none"
-              >
-                Leave
-              </button>
-            </div>
-            <div className="flex flex-row justify-between items-center px-10" style={{ flex: 0.8 }}>
-              <Host item={host} />
-              <span>-</span>
-              <Guest item={guest} />
-            </div>
+    <div className="flex flex-row p-10">
+      <div style={{ flex: 0.8 }} className="flex flex-col">
+        <div className="flex flex-row">
+          <div
+            style={{ flex: 0.2 }}
+            className="flex flex-col justify-between rounded-lg shadow-lg p-2 history-panel max-w-sm "
+          >
+            History
+          </div>
+          <div style={{ flex: 0.8 }} className="flex flex-col justify-between">
+            <BoardGame host={host} guest={guest} />
           </div>
         </div>
-        <div style={{ flex: 0.2 }}>
-          <Chat roomId={id} />
+        <div className="flex flex-row items-center my-10">
+          <Features />
+          <div className="flex flex-row justify-between items-center px-10" style={{ flex: 0.8 }}>
+            <Player1 item={host} />
+            <span>-</span>
+            <Player2 item={guest} />
+          </div>
         </div>
+      </div>
+      <div style={{ flex: 0.2 }}>
+        <Tabs defaultActiveKey="1" centered>
+          <TabPane tab="Chat" key="1">
+            <Chat roomId={id} />
+          </TabPane>
+          <TabPane tab="Viewers" key="2">
+            <Viewers />
+          </TabPane>
+        </Tabs>
       </div>
     </div>
   );

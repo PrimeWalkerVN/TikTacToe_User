@@ -29,7 +29,11 @@ const Chat = (props: any) => {
     />
   );
   useEffect(() => {
-    messageEnd.scrollIntoView({ behavior: 'smooth' });
+    messageEnd.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'start'
+    });
   }, [chats]);
 
   useEffect(() => {
@@ -64,7 +68,6 @@ const Chat = (props: any) => {
 
   return (
     <div className="flex flex-col justify-between rounded-lg shadow-lg p-2 chat-panel max-w-sm ">
-      <div className="text-lg font-bold">Chat:</div>
       <div className="py-2 overflow-y-scroll h-1/2">
         {chats.length > 0 ? <CommentList comments={chats} /> : <div className="text-center">No Info </div>}
         <div
