@@ -13,20 +13,33 @@ const Game: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   const { TabPane } = Tabs;
-  const [host, setHost] = useState(null);
-  const [guest, setGuest] = useState(null);
-  const [viewer, setViewer] = useState([]);
+  const [player1, setPlayer1] = useState(null);
+  const [player2, setPlayer2] = useState(null);
+  const [viewers, setViewers] = useState([]);
 
   useEffect(() => {
-    Socket.subGuestJoined((err: any, data: any) => {
+    Socket.subViewerTrigger((err: any, data: any) => {
       if (err) return;
-      setHost(data.host);
-      setGuest(data.guest);
+      setViewers(data);
+      console.log(data);
+    });
+    Socket.subPlayerPickChair((err: any, data: any) => {
+      if (err) return;
+
+      console.log(data);
     });
   }, []);
   useEffect(() => {
-    Socket.joinGame(id);
+    Socket.joinRoom(id);
+    return () => {
+      Socket.leaveRoom(id);
+    };
   }, [id]);
+
+  const pickPlayer1 = () => {
+    console.log('pick player1');
+    Socket.pickPlayer(id, true);
+  };
 
   return (
     <div className="flex flex-row p-10">
@@ -39,15 +52,15 @@ const Game: React.FC = () => {
             History
           </div>
           <div style={{ flex: 0.8 }} className="flex flex-col justify-between">
-            <BoardGame host={host} guest={guest} />
+            <BoardGame host={player1} guest={player2} />
           </div>
         </div>
         <div className="flex flex-row items-center my-10">
           <Features />
           <div className="flex flex-row justify-between items-center px-10" style={{ flex: 0.8 }}>
-            <Player1 item={host} />
+            <Player1 item={player1} pickPlayer1={pickPlayer1} />
             <span>-</span>
-            <Player2 item={guest} />
+            <Player2 item={player2} />
           </div>
         </div>
       </div>

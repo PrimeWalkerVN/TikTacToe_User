@@ -14,15 +14,22 @@ interface SocketType {
 
   // Room
   createNewRoom: any;
-  joinGame: any;
+  joinRoom: any;
+  leaveRoom: any;
+  pickPlayer: any;
+  leaveChair: any;
+  readyTrigger: any;
   sendMessage: any;
-  subNewCreatedRoom: any;
-  subCreatedRoom: any;
+
+  subNewCreatedRoom: any; // when user create room
+  subViewerTrigger: any; // when user join room or leave
+  subPlayerPickChair: any; // when user pick one chair
+  subPlayerLeaveChair: any; // when user leave one chair
+  subPlayerStatusChange: any; // when user ready or not
   subListUser: any;
-  subGuestJoined: any;
   subMessageToChat: any;
 
-  // Game
+  // Match Game
   play: any;
   finishGame: any;
   subNewPlay: any;
@@ -50,17 +57,35 @@ const Socket: SocketType = {
   },
 
   // Room
-  createNewRoom: (roomId: any) => {
-    instance.emit('createNewRoom', { roomId });
+  createNewRoom: (roomId: any, matchId: any) => {
+    instance.emit('createNewRoom', { roomId, matchId });
   },
-  joinGame: (roomId: any) => {
-    instance.emit('joinGame', { gameId: roomId });
+  joinRoom: (roomId: any) => {
+    const token = getToken();
+    instance.emit('joinRoom', { token, roomId });
+  },
+  leaveRoom: (roomId: any) => {
+    const token = getToken();
+    instance.emit('leaveRoom', { token, roomId });
+  },
+  pickPlayer: (roomId: any, chair: boolean) => {
+    const token = getToken();
+    instance.emit('pickPlayer', { token, roomId, chair });
+  },
+  leaveChair: (roomId: any) => {
+    const token = getToken();
+    instance.emit('leaveChair', { token, roomId });
+  },
+  readyTrigger: (roomId: any) => {
+    const token = getToken();
+    instance.emit('leaveChair', { token, roomId });
   },
   sendMessage: (roomId: any, msg: any) => {
     instance.emit('sendMessage', { gameId: roomId, newMessage: msg });
   },
-  subCreatedRoom: (cb: any) => {
-    instance.on('roomCreated', (data: any) => {
+
+  subViewerTrigger: (cb: any) => {
+    instance.on('viewerTrigger', (data: any) => {
       return cb(null, data);
     });
   },
@@ -69,16 +94,28 @@ const Socket: SocketType = {
       return cb(null, data);
     });
   },
+  subPlayerPickChair: (cb: any) => {
+    instance.on('playerPickChair', (data: any) => {
+      return cb(null, data);
+    });
+  },
+  subPlayerLeaveChair: (cb: any) => {
+    instance.on('playerLeaveChair', (data: any) => {
+      return cb(null, data);
+    });
+  },
+  subPlayerStatusChange: (cb: any) => {
+    instance.on('playerStatusChange', (data: any) => {
+      return cb(null, data);
+    });
+  },
+
   subListUser: (cb: any) => {
     instance.on('list', (data: any) => {
       return cb(null, data);
     });
   },
-  subGuestJoined: (cb: any) => {
-    instance.on('guestJoined', (data: any) => {
-      return cb(null, data);
-    });
-  },
+
   subMessageToChat: (cb: any) => {
     instance.on('newMessage', (data: any) => {
       return cb(null, data);

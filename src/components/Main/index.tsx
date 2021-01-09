@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import roomApi from '../../api/roomApi';
 import Socket from '../../socket/socket';
@@ -10,33 +10,38 @@ import { AddBoard } from './AddBoard';
 import RoomLists from './RoomLists/RoomLists';
 import LeaderBoard from './LeaderBoard';
 import UsersStatus from './UserStatus';
+import { setRoomsAction } from '../../redux/reducers/roomReducer';
+import matchApi from '../../api/matchApi';
 
 const Main = () => {
   const history = useHistory();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const dispatch = useDispatch();
   const user: any = useSelector((state: RootState) => state.user.user);
+  const roomData: any = useSelector((state: RootState) => state.room.rooms);
   const [users, setUsers] = useState([]);
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
+    setRooms(roomData);
     Socket.subListUser((err: any, data: any) => {
       if (err) return;
       setUsers(data.listUsers);
-      if (data.listRooms) setRooms(data.listRooms);
+      if (data.listRooms) {
+        setRooms(data.listRooms);
+        dispatch(setRoomsAction(data.listRooms));
+      }
     });
-    Socket.subNewCreatedRoom((err: any, data: any) => {
-      if (err) return;
-      setRooms(data);
-    });
-  }, []);
+  }, [dispatch, roomData]);
 
   const createNewRoom = async (values: any) => {
     setIsLoading(true);
     const params = { creator: user, ...values };
     try {
       const res: any = await roomApi.create(params);
-      Socket.createNewRoom(res.body.roomId.toString());
-      history.push(`/dashboard/room/${res.roomId}`);
+      const resMatch: any = await matchApi.create({ roomId: res.body._id });
+      Socket.createNewRoom(res.body.roomId, resMatch.body._id);
+      history.push(`/dashboard/room/${res.body.roomId}`);
     } catch (err) {
       if (err.response) Notification('error', 'Error', err.response.data.message);
       else Notification('error', 'Error', err.message);

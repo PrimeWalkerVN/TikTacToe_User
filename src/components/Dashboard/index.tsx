@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, useHistory } from 'react-router-dom';
+import { setRoomsAction } from '../../redux/reducers/roomReducer';
 import { logout } from '../../redux/reducers/userReducer';
 import Socket from '../../socket/socket';
 import { RootState } from '../../types/Reducer';
@@ -39,6 +40,12 @@ const Dashboard: React.FC = () => {
       };
     });
   }, []);
+  useEffect(() => {
+    Socket.subNewCreatedRoom((err: any, data: any) => {
+      if (err) return;
+      dispatch(setRoomsAction(data));
+    });
+  }, [dispatch]);
   return (
     <div className="w-full">
       <Header
