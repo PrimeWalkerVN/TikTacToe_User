@@ -32,7 +32,7 @@ const Board: React.FC<Props> = props => {
         title={
           // eslint-disable-next-line react/jsx-wrap-multilines
           <div className="flex justify-between items-center">
-            <div className="text-base text-red-600">#{item.gameId}</div>
+            <div className="text-base text-red-600">#{item.roomId}</div>
             <div className="truncate mx-2 text-base">{item.name}</div>
             {item.password ? <LockOutlined /> : <UnlockOutlined />}
           </div>
