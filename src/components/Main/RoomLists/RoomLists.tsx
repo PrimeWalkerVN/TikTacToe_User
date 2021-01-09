@@ -9,7 +9,7 @@ interface Props {
   clickDetail: any;
 }
 
-const GameLists: React.FC<Props> = props => {
+const RoomLists: React.FC<Props> = props => {
   const { data, clickDetail } = props;
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -61,4 +61,4 @@ const GameLists: React.FC<Props> = props => {
     </div>
   );
 };
-export default GameLists;
+export default RoomLists;

@@ -2,18 +2,18 @@ import axiosClient from './axiosClient';
 
 interface typeApi {
   create: any;
-  joinGame: any;
+  joinRoom: any;
 }
 
-const gameApi: typeApi = {
+const roomApi: typeApi = {
   create: (params: any) => {
-    const url = '/games/';
+    const url = '/rooms/';
     return axiosClient.post(url, params);
   },
-  joinGame: (params: any) => {
-    const url = `/games/join/${params.gameId}`;
+  joinRoom: (params: any) => {
+    const url = `/rooms/join/${params.roomId}`;
     return axiosClient.post(url, params);
   }
 };
 
-export default gameApi;
+export default roomApi;

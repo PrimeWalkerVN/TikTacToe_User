@@ -10,6 +10,8 @@ const Game: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [host, setHost] = useState(null);
   const [guest, setGuest] = useState(null);
+  const [viewer, setViewer] = useState([]);
+
   useEffect(() => {
     Socket.subGuestJoined((err: any, data: any) => {
       if (err) return;

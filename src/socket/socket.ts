@@ -13,11 +13,11 @@ interface SocketType {
   logout: any;
 
   // Room
-  joinRoom: any;
+  createNewRoom: any;
   joinGame: any;
   sendMessage: any;
-  subNewCreatedGame: any;
-  subCreatedGame: any;
+  subNewCreatedRoom: any;
+  subCreatedRoom: any;
   subListUser: any;
   subGuestJoined: any;
   subMessageToChat: any;
@@ -50,8 +50,8 @@ const Socket: SocketType = {
   },
 
   // Room
-  joinRoom: (roomId: any) => {
-    instance.emit('joinRoom', { gameId: roomId });
+  createNewRoom: (roomId: any) => {
+    instance.emit('createNewRoom', { roomId });
   },
   joinGame: (roomId: any) => {
     instance.emit('joinGame', { gameId: roomId });
@@ -59,13 +59,13 @@ const Socket: SocketType = {
   sendMessage: (roomId: any, msg: any) => {
     instance.emit('sendMessage', { gameId: roomId, newMessage: msg });
   },
-  subCreatedGame: (cb: any) => {
-    instance.on('gameCreated', (data: any) => {
+  subCreatedRoom: (cb: any) => {
+    instance.on('roomCreated', (data: any) => {
       return cb(null, data);
     });
   },
-  subNewCreatedGame: (cb: any) => {
-    instance.on('newGameCreated', (data: any) => {
+  subNewCreatedRoom: (cb: any) => {
+    instance.on('newRoomCreated', (data: any) => {
       return cb(null, data);
     });
   },

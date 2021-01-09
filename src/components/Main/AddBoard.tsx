@@ -25,7 +25,7 @@ export const AddBoard = (props: Props) => {
         type="button"
         onClick={() => setIsModal(true)}
       >
-        Open new game
+        Open new room
       </button>
       <Modal
         visible={isModal}

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import gameApi from '../../api/gameApi';
+import roomApi from '../../api/roomApi';
 import Socket from '../../socket/socket';
 import { RootState } from '../../types/Reducer';
 import Loading from '../common/Loading';
 import Notification from '../common/Notification';
 import { AddBoard } from './AddBoard';
-import GameLists from './GameLists/GameLists';
+import RoomLists from './RoomLists/RoomLists';
 import LeaderBoard from './LeaderBoard';
 import UsersStatus from './UserStatus';
 
@@ -16,31 +16,28 @@ const Main = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const user: any = useSelector((state: RootState) => state.user.user);
   const [users, setUsers] = useState([]);
-  const [games, setGames] = useState([]);
+  const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
     Socket.login();
     Socket.subListUser((err: any, data: any) => {
       if (err) return;
       setUsers(data.listUsers);
-      if (data.listGames) setGames(data.listGames);
+      if (data.listRooms) setRooms(data.listRooms);
     });
-    Socket.subNewCreatedGame((err: any, data: any) => {
+    Socket.subNewCreatedRoom((err: any, data: any) => {
       if (err) return;
-      setGames(data);
+      setRooms(data);
     });
   }, []);
 
-  const createNewGame = async (values: any) => {
+  const createNewRoom = async (values: any) => {
     setIsLoading(true);
-    const params = { host: user, ...values };
+    const params = { creator: user, ...values };
     try {
-      const res: any = await gameApi.create(params);
-      Socket.joinRoom(res.body.gameId.toString());
-      Socket.subCreatedGame((err: any, data: any) => {
-        if (err) return;
-        history.push(`/dashboard/game/${data.gameId}`);
-      });
+      const res: any = await roomApi.create(params);
+      Socket.createNewRoom(res.body.roomId.toString());
+      history.push(`/dashboard/room/${res.roomId}`);
     } catch (err) {
       if (err.response) Notification('error', 'Error', err.response.data.message);
       else Notification('error', 'Error', err.message);
@@ -50,15 +47,15 @@ const Main = () => {
   };
 
   const handleSubmit = (values: any) => {
-    createNewGame(values);
+    createNewRoom(values);
   };
-  const handleJoinGame = async (item: any, password: any) => {
-    const params = { gameId: item.gameId, password };
+  const handleJoinRoom = async (item: any, password: any) => {
+    const params = { roomId: item.roomId, password };
     setIsLoading(true);
     try {
-      const res: any = await gameApi.joinGame(params);
+      const res: any = await roomApi.joinRoom(params);
       if (res) {
-        history.push(`/dashboard/game/${item.gameId}`);
+        history.push(`/dashboard/room/${item.roomId}`);
       }
     } catch (err) {
       if (err.response) Notification('error', 'Error', err.response.data.message);
@@ -75,7 +72,7 @@ const Main = () => {
         <LeaderBoard />
       </div>
       <div className="main-lists p-5">
-        <GameLists data={games} clickDetail={handleJoinGame} />
+        <RoomLists data={rooms} clickDetail={handleJoinRoom} />
       </div>
       <div className="main-users flex flex-col items-end p-5">
         <UsersStatus users={users} user={user} />
