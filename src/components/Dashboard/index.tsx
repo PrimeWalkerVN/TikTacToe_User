@@ -35,13 +35,6 @@ const Dashboard: React.FC = () => {
   });
   useEffect(() => {
     Socket.login();
-    // window.addEventListener('beforeunload', (ev: any) => {
-    //   ev.preventDefault();
-    //   return () => {
-    //     Socket.logout();
-    //     Socket.disconnect();
-    //   };
-    // });
   }, []);
   useEffect(() => {
     Socket.subNewCreatedRoom((err: any, data: any) => {

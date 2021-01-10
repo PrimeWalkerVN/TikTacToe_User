@@ -41,7 +41,7 @@ const Main = () => {
     const params = { creator: user, ...values };
     try {
       const res: any = await roomApi.create(params);
-      const resMatch: any = await matchApi.create({ roomId: res.body._id });
+      const resMatch: any = await matchApi.create({ roomId: res.body.roomId });
       Socket.createNewRoom(res.body.roomId, resMatch.body._id);
       history.push(`/dashboard/room/${res.body.roomId}`);
     } catch (err) {

@@ -28,7 +28,7 @@ const RoomLists: React.FC<Props> = props => {
       setIsSearching(false);
       const res = data.filter(
         (item: any) =>
-          item.gameId.toString() === debouncedSearchTerm ||
+          item.roomId.toString() === debouncedSearchTerm ||
           item.name.toLowerCase() === debouncedSearchTerm.toLowerCase()
       );
       setResult(res);

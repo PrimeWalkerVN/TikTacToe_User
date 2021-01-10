@@ -1,3 +1,4 @@
+import { Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -108,9 +109,13 @@ const BoardGame = (props: ComponentProps) => {
     setSquares(Array.from({ length: nrows }, () => Array.from({ length: ncols }, () => '')));
   };
   return (
-    <div className="flex flex-row justify-center w-full">
+    <div className="flex flex-col justify-center w-full">
       <div style={{ flex: 0.8 }} className="flex justify-center">
         <Boards winning={winning} squares={squares} numCol={ncols} numRow={nrows} onClick={handleClick} />
+      </div>
+      <div className="flex flex-row mt-5 items-center justify-center w-full">
+        <Button type="primary">Claim draw</Button>
+        <div className=" text-xl text-bold text-red-500 ml-10">Timeout: 00:00</div>
       </div>
     </div>
   );

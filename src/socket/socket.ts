@@ -24,7 +24,6 @@ interface SocketType {
   subNewCreatedRoom: any; // when user create room
   subViewerTrigger: any; // when user join room or leave
   subPlayerPickChair: any; // when user pick one chair
-  subPlayerLeaveChair: any; // when user leave one chair
   subPlayerStatusChange: any; // when user ready or not
   subListUser: any;
   subMessageToChat: any;
@@ -76,12 +75,12 @@ const Socket: SocketType = {
     const token = getToken();
     instance.emit('leaveChair', { token, roomId });
   },
-  readyTrigger: (roomId: any) => {
+  readyTrigger: (roomId: any, status: any) => {
     const token = getToken();
-    instance.emit('leaveChair', { token, roomId });
+    instance.emit('readyTrigger', { token, roomId, status });
   },
   sendMessage: (roomId: any, msg: any) => {
-    instance.emit('sendMessage', { gameId: roomId, newMessage: msg });
+    instance.emit('sendMessage', { roomId, newMessage: msg });
   },
 
   subViewerTrigger: (cb: any) => {
@@ -96,11 +95,6 @@ const Socket: SocketType = {
   },
   subPlayerPickChair: (cb: any) => {
     instance.on('playerPickChair', (data: any) => {
-      return cb(null, data);
-    });
-  },
-  subPlayerLeaveChair: (cb: any) => {
-    instance.on('playerLeaveChair', (data: any) => {
       return cb(null, data);
     });
   },
@@ -123,9 +117,9 @@ const Socket: SocketType = {
   },
 
   // Game
-  play: (gameId: any, position: any) => {
+  play: (roomId: any, position: any) => {
     if (!instance) return;
-    instance.emit('play', { gameId, position });
+    instance.emit('play', { roomId, position });
   },
   finishGame: (data: any) => {
     if (!instance) return;
