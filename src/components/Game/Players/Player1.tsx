@@ -30,7 +30,7 @@ const Player1 = (props: any) => {
               <Avatar size={90} src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png " />
               <div className="flex flex-col w-full">
                 <div className="truncate ml-2 text-xl font-bold">{item.fullName}</div>
-                <PlayerInfo />
+                <PlayerInfo data={item} />
               </div>
             </div>
           ) : (

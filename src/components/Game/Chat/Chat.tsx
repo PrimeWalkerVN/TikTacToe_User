@@ -6,16 +6,10 @@ import Socket from '../../../socket/socket';
 import { RootState } from '../../../types/Reducer';
 
 const { TextArea } = Input;
-interface ChatType {
-  author: string;
-  avatar: string;
-  content: any;
-  datetime: any;
-}
+
 const Chat = (props: any) => {
-  const [chats, setChats] = useState<ChatType[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const { roomId } = props;
+  const { roomId, chats, setChats } = props;
   const [value, setValue] = useState('');
   let messageEnd: any = useRef(null);
   const user: any = useSelector((state: RootState) => state.user.user);
@@ -39,7 +33,7 @@ const Chat = (props: any) => {
   useEffect(() => {
     Socket.subMessageToChat((err: any, data: any) => {
       if (err) return;
-      setChats(oldChats => [...oldChats, data.message]);
+      setChats((oldChats: any) => [...oldChats, data.message]);
     });
   }, [roomId]);
 

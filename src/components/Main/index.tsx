@@ -61,7 +61,7 @@ const Main = () => {
     try {
       const res: any = await roomApi.joinRoom(params);
       if (res) {
-        history.push(`/dashboard/room/${item.roomId}`);
+        history.push(`/dashboard/room/${item.roomId}`, { roomData: res.body });
       }
     } catch (err) {
       if (err.response) Notification('error', 'Error', err.response.data.message);

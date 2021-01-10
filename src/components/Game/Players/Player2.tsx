@@ -28,7 +28,7 @@ const Player2 = (props: any) => {
             <div className="flex flex-row items-center w-full p-4 justify-end">
               <div className="flex flex-col w-full items-end px-4">
                 <div className="truncate ml-2 text-xl font-bold">{item.fullName}</div>
-                <PlayerInfo reverse />
+                <PlayerInfo reverse data={item} />
               </div>
               <Avatar size={90} src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png " />
             </div>
