@@ -153,14 +153,14 @@ const Game: React.FC = (props: any) => {
 
       // leave room khi dang choi
       // check => isPlayer 1 || 2 => xu thua
-      if (isStarted) handleFinish([]);
+      if (isStarted) handleLose([]);
     }
     Socket.leaveRoom(id);
     history.push('/dashboard');
   };
 
   // user when user leave room => user do' thua
-  const handleFinish = (winLine: any) => {
+  const handleLose = (winLine: any) => {
     if (isPlayer) {
       const loser: any = player1?.username === user?.username ? player1?._id : player2?._id;
       const winner: any = player1?._id === loser?._id ? player2?._id : player1?._id;
@@ -174,6 +174,10 @@ const Game: React.FC = (props: any) => {
       };
       Socket.finishGame(data);
     }
+  };
+
+  const surrenderHandler = () => {
+    handleLose([]);
   };
 
   const startNewGame = () => {
@@ -213,6 +217,7 @@ const Game: React.FC = (props: any) => {
             startNewGame={startNewGame}
             isStarted={isStarted}
             leaveRoomHandler={leaveRoomHandler}
+            surrenderHandler={surrenderHandler}
             finishedMatch={finishedMatch}
           />
           <div className="flex flex-row justify-between items-center px-10" style={{ flex: 0.8 }}>
@@ -245,7 +250,7 @@ const Game: React.FC = (props: any) => {
             <Viewers viewers={viewers} user={user} />
           </TabPane>
           <TabPane tab="Invite" key="3">
-            <Viewers viewers={usersOnline} user={user} />
+            <Viewers viewers={usersOnline} user={user} invite />
           </TabPane>
         </Tabs>
       </div>

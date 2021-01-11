@@ -12,6 +12,8 @@ import LeaderBoard from './LeaderBoard';
 import UsersStatus from './UserStatus';
 import { setRoomsAction, setUsersOnline } from '../../redux/reducers/roomReducer';
 import matchApi from '../../api/matchApi';
+import { QuickPlay } from './QuickPlay';
+import usersApi from '../../api/userApi';
 
 const Main = () => {
   const history = useHistory();
@@ -22,6 +24,7 @@ const Main = () => {
   const usersOnline: any = useSelector((state: RootState) => state.room.usersOnline);
   const [users, setUsers] = useState([]);
   const [rooms, setRooms] = useState([]);
+  const [ranks, setRanks] = useState([]);
 
   useEffect(() => {
     setRooms(roomData);
@@ -72,12 +75,35 @@ const Main = () => {
       setIsLoading(false);
     }
   };
+  const handleQuickPlay = () => {
+    console.log('Quick play');
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    const getRanks = async () => {
+      try {
+        const res = await usersApi.getRanks();
+        if (res) {
+          setRanks(res.body);
+        }
+      } catch (e) {
+        if (e.response) Notification('error', 'Error', e.response.data.message);
+      } finally {
+        setIsLoading(false);
+      }
+      setIsLoading(false);
+    };
+    getRanks();
+  }, []);
   return (
     <div className="flex w-full h-screen flex-row justify-between p-5 bg-scroll">
       {isLoading && <Loading />}
-      <div className="main-add flex flex-col">
+      <div className="main-add flex flex-col items-center shadow-xl mr-5 p-5">
         <AddBoard handleSubmit={handleSubmit} />
-        <LeaderBoard />
+        <QuickPlay handleSubmit={handleQuickPlay} />
+        <LeaderBoard data={ranks} />
       </div>
       <div className="main-lists">
         <RoomLists data={rooms} clickDetail={handleJoinRoom} />

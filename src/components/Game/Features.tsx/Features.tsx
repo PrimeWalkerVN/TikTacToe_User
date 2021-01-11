@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Features = (props: any) => {
-  const { isStarted, leaveRoomHandler, finishedMatch, startNewGame } = props;
+  const { isStarted, leaveRoomHandler, finishedMatch, startNewGame, surrenderHandler } = props;
   return (
     <div style={{ flex: 0.2 }} className="flex flex-col items-center">
       {!isStarted && finishedMatch && (
@@ -17,6 +17,7 @@ const Features = (props: any) => {
         {isStarted && (
           <div>
             <button
+              onClick={surrenderHandler}
               type="button"
               className="w-32 h-20 inline-block py-2 text-xl font-bold leading-6 text-center text-white uppercase transition bg-gray-500 rounded shadow ripple hover:shadow-lg hover:bg-gray-600 focus:outline-none"
             >

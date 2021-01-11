@@ -49,7 +49,7 @@ const RoomLists: React.FC<Props> = props => {
         className="w-1/3 my-5 custom-search"
       />
       <List
-        grid={{ gutter: 16, column: 4 }}
+        grid={{ gutter: 16, column: 5 }}
         pagination={{ defaultPageSize: 8 }}
         dataSource={result}
         renderItem={item => {

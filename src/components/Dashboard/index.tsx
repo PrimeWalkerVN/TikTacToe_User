@@ -9,7 +9,6 @@ import { RootState } from '../../types/Reducer';
 import PrivateRoute from '../auth/PrivateRoute';
 import Header from '../common/Header';
 
-const ProfileAnotherUser = React.lazy(() => import('../ProfileAnotherUser'));
 const Game = React.lazy(() => import('../Game'));
 const Main = React.lazy(() => import('../Main'));
 const Profile = React.lazy(() => import('../Profile'));
@@ -24,7 +23,7 @@ const Dashboard: React.FC = () => {
     dispatch(logout());
   };
   const profileHandler = () => {
-    history.push('/dashboard/profile');
+    history.push('/dashboard/profile', { user });
   };
   const redirectHomeHandler = () => {
     history.push('/dashboard');
@@ -54,7 +53,6 @@ const Dashboard: React.FC = () => {
       <Switch>
         <PrivateRoute path="/dashboard/room/:id" component={Game} />
         <PrivateRoute path="/dashboard/profile" component={Profile} />
-        <PrivateRoute path="/dashboard/profile/:username" component={ProfileAnotherUser} />
         <PrivateRoute path="/" component={Main} />
       </Switch>
     </div>

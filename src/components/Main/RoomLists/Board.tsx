@@ -42,7 +42,6 @@ const Board: React.FC<Props> = props => {
         style={{ textAlign: 'center' }}
       >
         <img src={tictac} alt="tictactoe" className="object-contain h-full w-full" />
-
         <Meta className="pt-2" description={item.status.charAt(0).toUpperCase() + item.status.slice(1)} />
       </Card>
       <Modal

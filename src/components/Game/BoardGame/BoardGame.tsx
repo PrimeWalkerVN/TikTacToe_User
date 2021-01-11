@@ -172,10 +172,8 @@ const BoardGame = (props: ComponentProps) => {
     }
 
     if (counter === 0 && isStarted) {
-      if (xIsNext) {
-        setFinishedMatch(true);
-        handleTimeout();
-      }
+      setFinishedMatch(true);
+      handleTimeout();
     }
   }, [counter, isStarted]);
 
@@ -189,9 +187,11 @@ const BoardGame = (props: ComponentProps) => {
         {counter > 0 ? (
           <Timer counter={counter} setCounter={setCounter} />
         ) : (
-          <div className=" text-xl text-bold text-red-500 ml-10">Timeout: 0</div>
+          <div className="text-xl text-bold ml-10" style={{ color: xIsNext ? 'blue' : 'red' }}>
+            Timeout: 0
+          </div>
         )}
-        <div className="text-xl text-bold text-red-500 ml-10" style={{ color: xIsNext ? 'blue' : 'red' }}>
+        <div className="text-xl text-bold ml-10" style={{ color: xIsNext ? 'blue' : 'red' }}>
           Turn: {xIsNext ? 'X' : 'O'}
         </div>
       </div>

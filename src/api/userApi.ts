@@ -9,6 +9,7 @@ interface typeUserApi {
   forgotPassword: any;
   resetPassword: any;
   resendActiveEmail: any;
+  getRanks: any;
 }
 const usersApi: typeUserApi = {
   login: (params: any) => {
@@ -42,6 +43,10 @@ const usersApi: typeUserApi = {
   resendActiveEmail: (params: any) => {
     const url = `/users/resend-active-email`;
     return axiosClient.post(url, params);
+  },
+  getRanks: () => {
+    const url = `/users/ranks`;
+    return axiosClient.get(url);
   }
 };
 

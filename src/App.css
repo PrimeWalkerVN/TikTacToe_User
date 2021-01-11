@@ -6,11 +6,11 @@
 }
 
 .main-add {
-    flex: 0.2
+    flex: 0.1
 }
 
 .main-lists {
-    flex: 0.7
+    flex: 0.8
 }
 
 .main-users {
@@ -27,6 +27,7 @@
 }
 
 .square {
+    outline: none;
     margin-right: -2px;
     margin-top: -2px;
 }

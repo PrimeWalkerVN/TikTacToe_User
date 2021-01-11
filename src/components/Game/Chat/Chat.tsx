@@ -56,13 +56,19 @@ const Chat = (props: any) => {
     }, 500);
   };
 
+  const handleKeyDown = (e: any) => {
+    if (e.keyCode === 13) {
+      handleSubmit();
+    }
+  };
+
   const handleChange = (e: any) => {
     setValue(e.target.value);
   };
 
   return (
     <div className="flex flex-col justify-between rounded-lg shadow-lg p-2 chat-panel max-w-sm ">
-      <div className="py-2 overflow-y-scroll h-1/2">
+      <div className="py-2 overflow-y-scroll h-2/3">
         {chats.length > 0 ? <CommentList comments={chats} /> : <div className="text-center">No Info </div>}
         <div
           ref={node => {
@@ -76,10 +82,16 @@ const Chat = (props: any) => {
         </div>
         <Form className="w-full">
           <Form.Item>
-            <TextArea rows={4} onChange={handleChange} value={value} />
+            <Input onChange={handleChange} value={value} />
           </Form.Item>
           <Form.Item>
-            <Button htmlType="submit" loading={submitting} onClick={handleSubmit} type="primary">
+            <Button
+              onKeyDown={handleKeyDown}
+              htmlType="submit"
+              loading={submitting}
+              onClick={handleSubmit}
+              type="primary"
+            >
               Send
             </Button>
           </Form.Item>
