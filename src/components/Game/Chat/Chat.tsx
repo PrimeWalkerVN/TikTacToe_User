@@ -53,7 +53,7 @@ const Chat = (props: any) => {
         datetime: moment().fromNow()
       };
       Socket.sendMessage(roomId, newMessage);
-    }, 1000);
+    }, 500);
   };
 
   const handleChange = (e: any) => {

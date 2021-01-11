@@ -14,7 +14,7 @@ const Player2 = (props: any) => {
         {item && (
           <div className="flex flex-row justify-between w-full">
             <Button onClick={setReady} type={player2Status ? 'primary' : 'ghost'}>
-              Ready
+              {player2Status ? 'READY!' : 'Ready'}
             </Button>
             {user.username === item.username && (
               <Button onClick={leaveChairHandler} type="default">
@@ -26,8 +26,13 @@ const Player2 = (props: any) => {
         <div className="overflow-hidden rounded-lg shadow-lg h-24 flex items-center w-full justify-center">
           {item ? (
             <div className="flex flex-row items-center w-full p-4 justify-end">
+              <div className="text-xl font-bold text-blue-600">(X)</div>
               <div className="flex flex-col w-full items-end px-4">
-                <div className="truncate ml-2 text-xl font-bold">{item.fullName}</div>
+                {item.username === user.username ? (
+                  <div className="truncate text-blue-600 ml-2 text-xl font-bold">{item.fullName}</div>
+                ) : (
+                  <div className="truncate ml-2 text-xl font-bold">{item.fullName}</div>
+                )}
                 <PlayerInfo reverse data={item} />
               </div>
               <Avatar size={90} src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png " />

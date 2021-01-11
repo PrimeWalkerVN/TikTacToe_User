@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
 import { Tabs } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom';
 import Socket from '../../socket/socket';
+import { RootState } from '../../types/Reducer';
+import Notification from '../common/Notification';
 import BoardGame from './BoardGame/BoardGame';
 import Chat from './Chat/Chat';
-import Player2 from './Players/Player2';
-import Player1 from './Players/Player1';
-import Viewers from './Viewers/Viewers';
 import Features from './Features.tsx/Features';
-import { RootState } from '../../types/Reducer';
-import roomApi from '../../api/roomApi';
+import Matches from './Matches/Matches';
+import Player1 from './Players/Player1';
+import Player2 from './Players/Player2';
+import Viewers from './Viewers/Viewers';
 
 interface ChatType {
   author: string;
@@ -32,9 +33,12 @@ const Game: React.FC = (props: any) => {
   const [player1Status, setPlayer1Status] = useState(false);
   const [player2Status, setPlayer2Status] = useState(false);
   const [isPlayer, setIsPlayer] = useState(false);
-  const [matches, setMatches] = useState([]);
+  const [matches, setMatches] = useState<any>([]);
   const [isStarted, setIsStarted] = useState(false);
   const [viewers, setViewers] = useState([]);
+  const [currentMatch, setCurrentMatch] = useState(null);
+  const [currentBoard, setCurrentBoard] = useState([]);
+  const [finishedMatch, setFinishedMatch] = useState(false);
 
   useEffect(() => {
     Socket.subViewerTrigger((err: any, data: any) => {
@@ -59,24 +63,40 @@ const Game: React.FC = (props: any) => {
       if (data.player1Status && data.player2Status) setIsStarted(true);
       else setIsStarted(false);
     });
+    Socket.subNewMatch((err: any, data: any) => {
+      if (err) return;
+      if (data.roomInfo) {
+        console.log(data);
+        setCurrentMatch(data.roomInfo.currentMatch);
+        setMatches((old: any) => [...old, { _id: data.roomInfo.currentMatch }]);
+      }
+    });
   }, []);
+
+  useEffect(() => {
+    resetGame();
+  }, [currentMatch]);
 
   useEffect(() => {
     Socket.joinRoom(id);
     if (props.location.state) {
       const { roomData } = props.location.state;
-      const { roomInfo, matches } = roomData;
-      if (matches) setMatches(matches);
-      if (roomInfo.player1) {
-        setPlayer1(roomInfo.player1);
-        setPlayer1Status(roomInfo.player1Status);
-        checkPlayer(roomInfo.player1.username);
-      }
+      if (roomData) {
+        const { roomInfo, matches } = roomData;
+        if (matches) setMatches(matches);
+        if (roomInfo.currentMatch) setCurrentMatch(roomInfo.currentMatch);
+        if (roomInfo.currentBoard) setCurrentBoard(roomInfo.currentBoard);
+        if (roomInfo.player1) {
+          setPlayer1(roomInfo.player1);
+          setPlayer1Status(roomInfo.player1Status);
+          checkPlayer(roomInfo.player1.username);
+        }
 
-      if (roomInfo.player2) {
-        setPlayer2(roomInfo.player2);
-        setPlayer1Status(roomInfo.player2Status);
-        checkPlayer(roomInfo.player2.username);
+        if (roomInfo.player2) {
+          setPlayer2(roomInfo.player2);
+          setPlayer1Status(roomInfo.player2Status);
+          checkPlayer(roomInfo.player2.username);
+        }
       }
     }
 
@@ -105,12 +125,20 @@ const Game: React.FC = (props: any) => {
 
   const setReadyPlayer = (status: any) => {
     if (isPlayer) {
+      if (finishedMatch) {
+        Notification('error', 'Please start new game!');
+        return;
+      }
       Socket.readyTrigger(id, status);
     }
   };
 
   const leaveChair = () => {
     Socket.readyTrigger(id, false);
+    if (isStarted) {
+      Notification('error', 'Please finish this game!');
+      return;
+    }
     if (isPlayer) {
       Socket.leaveChair(id);
       setIsPlayer(false);
@@ -125,6 +153,7 @@ const Game: React.FC = (props: any) => {
 
       // leave room khi dang choi
       // check => isPlayer 1 || 2 => xu thua
+      if (isStarted) handleFinish([]);
     }
     Socket.leaveRoom(id);
     history.push('/dashboard');
@@ -133,8 +162,8 @@ const Game: React.FC = (props: any) => {
   // user when user leave room => user do' thua
   const handleFinish = (winLine: any) => {
     if (isPlayer) {
-      const loser: any = player1?.username ?? user?.username === null ? player1?._id : player2?._id;
-      const winner: any = player1?.username ?? user?.username === null ? player1?._id : player2?._id;
+      const loser: any = player1?.username === user?.username ? player1?._id : player2?._id;
+      const winner: any = player1?._id === loser?._id ? player2?._id : player1?._id;
       const data = {
         roomId: id,
         winner,
@@ -147,24 +176,45 @@ const Game: React.FC = (props: any) => {
     }
   };
 
+  const startNewGame = () => {
+    Socket.startNewMatch(id);
+  };
+  const resetGame = () => {
+    Socket.readyTrigger(id, false);
+    setFinishedMatch(false);
+    setCurrentBoard([]);
+    setCurrentBoard([]);
+  };
+
   // xu thua luc tat tab, quay lai => cho thua
 
   return (
-    <div className="flex flex-row p-10">
+    <div className="flex flex-row p-10 h-screen overflow-auto">
       <div style={{ flex: 0.8 }} className="flex flex-col">
         <div className="flex flex-row">
-          <div
-            style={{ flex: 0.2 }}
-            className="flex flex-col justify-between rounded-lg shadow-lg p-2 history-panel max-w-sm "
-          >
-            {matches && matches.map((item: any) => <div>Match : {item._id}</div>)}
+          <div className="flex flex-col w-full" style={{ flex: 0.2 }}>
+            <Matches matches={matches} />
+            {isStarted && <div className="text-center text-2xl text-green-400 my-10">Started!</div>}
           </div>
           <div style={{ flex: 0.8 }} className="flex flex-col justify-between">
-            <BoardGame player1={player1} player2={player2} isStarted={isStarted} chats={chats} />
+            <BoardGame
+              player1={player1}
+              player2={player2}
+              isStarted={isStarted}
+              chats={chats}
+              currentBoard={currentBoard}
+              finishedMatch={finishedMatch}
+              setFinishedMatch={setFinishedMatch}
+            />
           </div>
         </div>
         <div className="flex flex-row items-center mt-2">
-          <Features isStarted={isStarted} leaveRoomHandler={leaveRoomHandler} />
+          <Features
+            startNewGame={startNewGame}
+            isStarted={isStarted}
+            leaveRoomHandler={leaveRoomHandler}
+            finishedMatch={finishedMatch}
+          />
           <div className="flex flex-row justify-between items-center px-10" style={{ flex: 0.8 }}>
             <Player1
               item={player1}

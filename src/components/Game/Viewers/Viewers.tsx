@@ -4,7 +4,7 @@ import Viewer from './Viewer';
 const Viewers = (props: any) => {
   const { viewers, user } = props;
   return (
-    <div className="flex justify-center">
+    <div className="flex flex-col items-start px-10">
       {viewers.length > 0 &&
         viewers.map((item: any) => {
           if (item._id !== user._id) return <Viewer key={item._id.toString()} username={item.fullName} />;

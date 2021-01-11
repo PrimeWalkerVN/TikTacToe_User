@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -13,20 +13,24 @@ interface ComponentProps {
   player2: any;
   isStarted: any;
   chats: any;
+  currentBoard: any;
+  finishedMatch: any;
+  setFinishedMatch: any;
 }
 
 const BoardGame = (props: ComponentProps) => {
-  const { player1, player2, isStarted, chats } = props;
+  const { player1, player2, isStarted, chats, finishedMatch, setFinishedMatch, currentBoard = [] } = props;
   const nrows: any = 20;
   const ncols: any = 20;
 
   const [counter, setCounter] = useState(-1);
   const [gameData, setGameData] = useState([]);
   const [winning, setWinning] = useState(null);
-  const [isFinish, setIsFinish] = useState(false);
   const [xIsNext, setXIsNext] = useState(false);
   const [turn, setTurn] = useState('O');
   const [squares, setSquares] = useState(Array.from({ length: nrows }, () => Array.from({ length: ncols }, () => '')));
+  const [isModal, setIsModal] = useState(false);
+  const [winnerTurn, setWinnerTurn] = useState<any>('');
 
   const { id } = useParams<{ id: string }>();
   const user: any = useSelector((state: RootState) => state.user.user);
@@ -35,7 +39,6 @@ const BoardGame = (props: ComponentProps) => {
     if (player1) {
       if (player1._id === user._id) setTurn('O');
     }
-
     if (player2) {
       if (player2._id === user._id) setTurn('X');
       newGame(gameData, 'O', true, false);
@@ -50,35 +53,35 @@ const BoardGame = (props: ComponentProps) => {
   useEffect(() => {
     Socket.subNewPlay((err: any, data: any) => {
       if (err) return;
-      stopTimer(-1);
-      startTimer();
       if (data.position.turn === 'X') setXIsNext(false);
       else setXIsNext(true);
-
       const { x, y, turn } = data.position;
-
       if (squares[x][y] !== null) return;
       const newSquares = [...squares];
       newSquares[x][y] = turn;
       setXIsNext(!xIsNext);
       setSquares(newSquares);
+      stopTimer(-1);
+      startTimer();
     });
   }, [squares, xIsNext]);
   useEffect(() => {
-    Socket.subGameFinished((err: any, data: any) => {
-      if (err) return;
-      setIsFinish(true);
-      setWinning(data?.winLine ?? null);
+    if (player1 && player2) {
+      Socket.subGameFinished((err: any, data: any) => {
+        if (err) return;
+        setWinning(data?.winLine ?? null);
 
-      // thong bao winner hoac hoa` .....
+        // thong bao winner hoac hoa` .....
 
-      console.log('====================================');
-      console.log(data.winner);
-      console.log('====================================');
-
-      const choose = false;
-      if (choose) resetData();
-    });
+        if (player1)
+          if (data.winner === player1?._id) setWinnerTurn('O');
+          else setWinnerTurn('X');
+        setIsModal(true);
+        const choose = false;
+        setFinishedMatch(true);
+        if (choose) resetData();
+      });
+    }
   }, [player1, player2]);
 
   const handleWin = (winLine: any) => {
@@ -108,7 +111,7 @@ const BoardGame = (props: ComponentProps) => {
   const handleClick = async (i: any, j: any) => {
     if (!isStarted) return;
     if (player2 === null || player1 === null) return;
-    if (isFinish) return;
+    if (finishedMatch) return;
     const value = xIsNext ? 'X' : 'O';
     if (value !== turn) return;
     if (squares[i][j] !== null) return;
@@ -119,7 +122,6 @@ const BoardGame = (props: ComponentProps) => {
     setXIsNext(!xIsNext);
     setSquares(newSquares);
     const position = { turn, x: i, y: j };
-    Socket.play(id, position);
     setTurn(value);
     const playRes: any = await play(value, i, j);
     if (playRes) {
@@ -129,14 +131,12 @@ const BoardGame = (props: ComponentProps) => {
         handleWin(playRes);
       }
     }
+    console.log('play');
+    Socket.play(id, position);
   };
 
   const resetData = () => {
-    setGameData([]);
     setWinning(null);
-    setIsFinish(false);
-    setXIsNext(false);
-    setTurn('O');
     setSquares(Array.from({ length: nrows }, () => Array.from({ length: ncols }, () => '')));
   };
 
@@ -151,8 +151,8 @@ const BoardGame = (props: ComponentProps) => {
   const handleTimeout = () => {
     const data = {
       roomId: id,
-      winner: xIsNext ? player2._id : player1._id,
-      loser: xIsNext ? player1._id : player2._id,
+      winner: xIsNext ? player1._id : player2._id,
+      loser: xIsNext ? player2._id : player1._id,
       winLine: [],
       messages: chats,
       isDraw: false
@@ -173,7 +173,7 @@ const BoardGame = (props: ComponentProps) => {
 
     if (counter === 0 && isStarted) {
       if (xIsNext) {
-        setIsFinish(true);
+        setFinishedMatch(true);
         handleTimeout();
       }
     }
@@ -195,6 +195,15 @@ const BoardGame = (props: ComponentProps) => {
           Turn: {xIsNext ? 'X' : 'O'}
         </div>
       </div>
+      <Modal
+        visible={isModal}
+        cancelButtonProps={{ style: { display: 'none' } }}
+        centered
+        closable={false}
+        onOk={() => setIsModal(false)}
+      >
+        <div className="mx-5 text-2xl font-bold text-center">Winner: {winnerTurn}</div>
+      </Modal>
     </div>
   );
 };

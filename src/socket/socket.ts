@@ -20,6 +20,7 @@ interface SocketType {
   leaveChair: any;
   readyTrigger: any;
   sendMessage: any;
+  startNewMatch: any;
 
   subNewCreatedRoom: any; // when user create room
   subViewerTrigger: any; // when user join room or leave
@@ -27,6 +28,7 @@ interface SocketType {
   subPlayerStatusChange: any; // when user ready or not
   subListUser: any;
   subMessageToChat: any;
+  subNewMatch: any;
 
   // Match Game
   play: any;
@@ -82,6 +84,9 @@ const Socket: SocketType = {
   sendMessage: (roomId: any, msg: any) => {
     instance.emit('sendMessage', { roomId, newMessage: msg });
   },
+  startNewMatch: (roomId: any) => {
+    instance.emit('startNewMatch', { roomId });
+  },
 
   subViewerTrigger: (cb: any) => {
     instance.on('viewerTrigger', (data: any) => {
@@ -112,6 +117,11 @@ const Socket: SocketType = {
 
   subMessageToChat: (cb: any) => {
     instance.on('newMessage', (data: any) => {
+      return cb(null, data);
+    });
+  },
+  subNewMatch: (cb: any) => {
+    instance.on('newMatchCreated', (data: any) => {
       return cb(null, data);
     });
   },

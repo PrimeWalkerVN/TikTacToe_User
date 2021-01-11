@@ -43,7 +43,9 @@ const Main = () => {
       const res: any = await roomApi.create(params);
       const resMatch: any = await matchApi.create({ roomId: res.body.roomId });
       Socket.createNewRoom(res.body.roomId, resMatch.body._id);
-      history.push(`/dashboard/room/${res.body.roomId}`);
+      history.push(`/dashboard/room/${res.body.roomId}`, {
+        roomData: { roomInfo: { currentMatch: resMatch.body._id }, matches: [resMatch.body] }
+      });
     } catch (err) {
       if (err.response) Notification('error', 'Error', err.response.data.message);
       else Notification('error', 'Error', err.message);
@@ -71,16 +73,17 @@ const Main = () => {
     }
   };
   return (
-    <div className="flex w-full h-screen flex-row justify-between p-10">
+    <div className="flex w-full h-screen flex-row justify-between p-5 bg-scroll">
       {isLoading && <Loading />}
       <div className="main-add flex flex-col">
         <AddBoard handleSubmit={handleSubmit} />
         <LeaderBoard />
       </div>
-      <div className="main-lists p-5">
+      <div className="main-lists">
         <RoomLists data={rooms} clickDetail={handleJoinRoom} />
       </div>
-      <div className="main-users flex flex-col items-end p-5">
+      <div className="main-users flex flex-col bg-scroll mx-5 ">
+        <div className="text-bold text-xl my-5">Users online</div>
         <UsersStatus users={users} user={user} />
       </div>
     </div>

@@ -9,7 +9,7 @@ const UsersStatus: React.FC<Props> = props => {
   const { users, user } = props;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col shadow-lg p-5">
       {users.length > 0 &&
         users.map((item: any) => {
           if (item._id !== user._id)
