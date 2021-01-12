@@ -16,10 +16,22 @@ interface ComponentProps {
   currentBoard: any;
   finishedMatch: any;
   setFinishedMatch: any;
+  isClearBoard: boolean;
+  setIsClearBoard: any;
 }
 
 const BoardGame = (props: ComponentProps) => {
-  const { player1, player2, isStarted, chats, finishedMatch, setFinishedMatch, currentBoard = [] } = props;
+  const {
+    player1,
+    player2,
+    isStarted,
+    chats,
+    finishedMatch,
+    setFinishedMatch,
+    currentBoard = [],
+    isClearBoard,
+    setIsClearBoard
+  } = props;
   const nrows: any = 20;
   const ncols: any = 20;
 
@@ -28,7 +40,11 @@ const BoardGame = (props: ComponentProps) => {
   const [winning, setWinning] = useState(null);
   const [xIsNext, setXIsNext] = useState(false);
   const [turn, setTurn] = useState('O');
-  const [squares, setSquares] = useState(Array.from({ length: nrows }, () => Array.from({ length: ncols }, () => '')));
+  const [squares, setSquares] = useState(
+    Array(nrows)
+      .fill(0)
+      .map(() => new Array(ncols).fill(null))
+  );
   const [isModal, setIsModal] = useState(false);
   const [winnerTurn, setWinnerTurn] = useState<any>('');
 
@@ -51,7 +67,17 @@ const BoardGame = (props: ComponentProps) => {
   }, [player1, player2, user, gameData]);
 
   useEffect(() => {
+    if (isClearBoard) {
+      newGame([], 'X', true, false);
+      setIsClearBoard(false);
+      resetData();
+      console.log('call clear');
+    }
+  }, [isClearBoard]);
+
+  useEffect(() => {
     Socket.subNewPlay((err: any, data: any) => {
+      console.log(squares);
       if (err) return;
       if (data.position.turn === 'X') setXIsNext(false);
       else setXIsNext(true);
@@ -87,8 +113,8 @@ const BoardGame = (props: ComponentProps) => {
   const handleWin = (winLine: any) => {
     const data = {
       roomId: id,
-      winner: player1._id,
-      loser: player2._id,
+      winner: user._id,
+      loser: user._id === player1._id ? player2._id : player1._id,
       winLine,
       messages: chats,
       isDraw: false
@@ -115,12 +141,12 @@ const BoardGame = (props: ComponentProps) => {
     const value = xIsNext ? 'X' : 'O';
     if (value !== turn) return;
     if (squares[i][j] !== null) return;
-    const newSquares = [...squares];
-    if (xIsNext) newSquares[i][j] = 'X';
-    else newSquares[i][j] = 'O';
+    // const newSquares = [...squares];
+    // if (xIsNext) newSquares[i][j] = 'X';
+    // else newSquares[i][j] = 'O';
 
-    setXIsNext(!xIsNext);
-    setSquares(newSquares);
+    // setXIsNext(!xIsNext);
+    // setSquares(newSquares);
     const position = { turn, x: i, y: j };
     setTurn(value);
     const playRes: any = await play(value, i, j);
@@ -137,11 +163,15 @@ const BoardGame = (props: ComponentProps) => {
 
   const resetData = () => {
     setWinning(null);
-    setSquares(Array.from({ length: nrows }, () => Array.from({ length: ncols }, () => '')));
+    setSquares(
+      Array(nrows)
+        .fill(0)
+        .map(() => new Array(ncols).fill(null))
+    );
   };
 
   const startTimer = () => {
-    setCounter(10);
+    setCounter(59);
   };
 
   const stopTimer = (value: number) => {
@@ -172,8 +202,10 @@ const BoardGame = (props: ComponentProps) => {
     }
 
     if (counter === 0 && isStarted) {
-      setFinishedMatch(true);
-      handleTimeout();
+      if (xIsNext) {
+        setFinishedMatch(true);
+        handleTimeout();
+      }
     }
   }, [counter, isStarted]);
 
@@ -187,11 +219,9 @@ const BoardGame = (props: ComponentProps) => {
         {counter > 0 ? (
           <Timer counter={counter} setCounter={setCounter} />
         ) : (
-          <div className="text-xl text-bold ml-10" style={{ color: xIsNext ? 'blue' : 'red' }}>
-            Timeout: 0
-          </div>
+          <div className=" text-xl text-bold text-yellow-500 ml-10">Timeout: 0</div>
         )}
-        <div className="text-xl text-bold ml-10" style={{ color: xIsNext ? 'blue' : 'red' }}>
+        <div className="text-xl text-bold text-red-500 ml-10" style={{ color: xIsNext ? 'blue' : 'red' }}>
           Turn: {xIsNext ? 'X' : 'O'}
         </div>
       </div>

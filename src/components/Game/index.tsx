@@ -39,6 +39,7 @@ const Game: React.FC = (props: any) => {
   const [currentMatch, setCurrentMatch] = useState(null);
   const [currentBoard, setCurrentBoard] = useState([]);
   const [finishedMatch, setFinishedMatch] = useState(false);
+  const [isClearBoard, setIsClearBoard] = useState(false);
 
   useEffect(() => {
     Socket.subViewerTrigger((err: any, data: any) => {
@@ -66,15 +67,16 @@ const Game: React.FC = (props: any) => {
     Socket.subNewMatch((err: any, data: any) => {
       if (err) return;
       if (data.roomInfo) {
-        console.log(data);
         setCurrentMatch(data.roomInfo.currentMatch);
         setMatches((old: any) => [...old, { _id: data.roomInfo.currentMatch }]);
+        setIsClearBoard(true);
       }
     });
   }, []);
 
   useEffect(() => {
     resetGame();
+    console.log('call reset');
   }, [currentMatch]);
 
   useEffect(() => {
@@ -184,9 +186,7 @@ const Game: React.FC = (props: any) => {
     Socket.startNewMatch(id);
   };
   const resetGame = () => {
-    Socket.readyTrigger(id, false);
     setFinishedMatch(false);
-    setCurrentBoard([]);
     setCurrentBoard([]);
   };
 
@@ -209,6 +209,8 @@ const Game: React.FC = (props: any) => {
               currentBoard={currentBoard}
               finishedMatch={finishedMatch}
               setFinishedMatch={setFinishedMatch}
+              isClearBoard={isClearBoard}
+              setIsClearBoard={setIsClearBoard}
             />
           </div>
         </div>

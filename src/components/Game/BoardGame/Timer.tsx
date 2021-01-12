@@ -14,7 +14,7 @@ const Timer = (props: any) => {
     return () => clearInterval(interval);
   }, []);
 
-  return <div className=" text-xl text-bold text-red-500 ml-10">Timeout: {count}</div>;
+  return <div className=" text-xl text-bold text-yellow-500 ml-10">Timeout: {count}</div>;
 };
 
 export default Timer;
