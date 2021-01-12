@@ -12,7 +12,7 @@ const Board: React.FC<Props> = props => {
   const { item, clickDetail } = props;
   const [isModal, setIsModal] = useState(false);
   const onClickDetail = () => {
-    if (item.status === 'playing') return;
+    if (item.status === 'completed') return;
     if (item.password) {
       setIsModal(true);
     } else clickDetail(item);

@@ -1,10 +1,10 @@
 import { Button, Modal } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import Socket from '../../../socket/socket';
 import { RootState } from '../../../types/Reducer';
-import { newGame, play } from '../../../utils/gameUitl/GameHelper2';
+import { newGame, play } from '../../../utils/gameUtil/GameHelper2';
 import Boards from './Boards';
 import Timer from './Timer';
 
@@ -36,9 +36,7 @@ const BoardGame = (props: ComponentProps) => {
   const ncols: any = 20;
 
   const [counter, setCounter] = useState(-1);
-  const [gameData, setGameData] = useState([]);
   const [winning, setWinning] = useState(null);
-  const [xIsNext, setXIsNext] = useState(false);
   const [turn, setTurn] = useState('O');
   const [squares, setSquares] = useState(
     Array(nrows)
@@ -52,63 +50,63 @@ const BoardGame = (props: ComponentProps) => {
   const user: any = useSelector((state: RootState) => state.user.user);
 
   useEffect(() => {
-    if (player1) {
-      if (player1._id === user._id) setTurn('O');
+    // setGameData(currentBoard);
+    const newSquares = Array(nrows)
+      .fill(0)
+      .map(() => new Array(ncols).fill(null));
+
+    if (currentBoard.length > 0) {
+      currentBoard.forEach((value: any) => {
+        newSquares[value.x][value.y] = value.turn;
+      });
+      setSquares(newSquares);
+      setTurn(currentBoard[currentBoard.length - 1].turn === 'X' ? 'O' : 'X');
     }
-    if (player2) {
-      if (player2._id === user._id) setTurn('X');
-      newGame(gameData, 'O', true, false);
-    } else {
-      const squaresData = Array(nrows)
-        .fill(0)
-        .map(() => new Array(ncols).fill(null));
-      setSquares(squaresData);
-    }
-  }, [player1, player2, user, gameData]);
+  }, [currentBoard]);
+
+  useEffect(() => {
+    newGame([], 'O', true, false);
+    resetData();
+  }, []);
 
   useEffect(() => {
     if (isClearBoard) {
       newGame([], 'X', true, false);
       setIsClearBoard(false);
       resetData();
-      console.log('call clear');
     }
   }, [isClearBoard]);
 
   useEffect(() => {
     Socket.subNewPlay((err: any, data: any) => {
-      console.log(squares);
       if (err) return;
-      if (data.position.turn === 'X') setXIsNext(false);
-      else setXIsNext(true);
       const { x, y, turn } = data.position;
       if (squares[x][y] !== null) return;
       const newSquares = [...squares];
       newSquares[x][y] = turn;
-      setXIsNext(!xIsNext);
+      setTurn(turn === 'O' ? 'X' : 'O');
       setSquares(newSquares);
       stopTimer(-1);
       startTimer();
     });
-  }, [squares, xIsNext]);
+  }, [squares]);
+
   useEffect(() => {
-    if (player1 && player2) {
-      Socket.subGameFinished((err: any, data: any) => {
-        if (err) return;
-        setWinning(data?.winLine ?? null);
+    // if (player1 && player2) {
+    Socket.subGameFinished((err: any, data: any) => {
+      if (err) return;
 
-        // thong bao winner hoac hoa` .....
+      // thong bao winner hoac hoa` .....
 
-        if (player1)
-          if (data.winner === player1?._id) setWinnerTurn('O');
-          else setWinnerTurn('X');
-        setIsModal(true);
-        const choose = false;
-        setFinishedMatch(true);
-        if (choose) resetData();
-      });
-    }
-  }, [player1, player2]);
+      if (player1 || player2) {
+        if (data.winner === player1?._id) setWinnerTurn('O');
+      } else setWinnerTurn('X');
+      setIsModal(true);
+      setFinishedMatch(true);
+      setWinning(data?.winLine ?? null);
+    });
+    // }
+  }, [player1, player2, setFinishedMatch]);
 
   const handleWin = (winLine: any) => {
     const data = {
@@ -138,18 +136,12 @@ const BoardGame = (props: ComponentProps) => {
     if (!isStarted) return;
     if (player2 === null || player1 === null) return;
     if (finishedMatch) return;
-    const value = xIsNext ? 'X' : 'O';
-    if (value !== turn) return;
-    if (squares[i][j] !== null) return;
-    // const newSquares = [...squares];
-    // if (xIsNext) newSquares[i][j] = 'X';
-    // else newSquares[i][j] = 'O';
+    if (user._id === player1._id && turn === 'X') return;
+    if (user._id === player2._id && turn === 'O') return;
 
-    // setXIsNext(!xIsNext);
-    // setSquares(newSquares);
+    if (squares[i][j] !== null) return;
     const position = { turn, x: i, y: j };
-    setTurn(value);
-    const playRes: any = await play(value, i, j);
+    const playRes: any = await play(turn, i, j);
     if (playRes) {
       if (playRes?.isDraw ?? false) {
         handleDraw();
@@ -157,7 +149,6 @@ const BoardGame = (props: ComponentProps) => {
         handleWin(playRes);
       }
     }
-    console.log('play');
     Socket.play(id, position);
   };
 
@@ -171,7 +162,7 @@ const BoardGame = (props: ComponentProps) => {
   };
 
   const startTimer = () => {
-    setCounter(59);
+    setCounter(559);
   };
 
   const stopTimer = (value: number) => {
@@ -181,8 +172,8 @@ const BoardGame = (props: ComponentProps) => {
   const handleTimeout = () => {
     const data = {
       roomId: id,
-      winner: xIsNext ? player1._id : player2._id,
-      loser: xIsNext ? player2._id : player1._id,
+      winner: turn === 'O' ? player1._id : player2._id,
+      loser: turn === 'O' ? player2._id : player1._id,
       winLine: [],
       messages: chats,
       isDraw: false
@@ -202,10 +193,10 @@ const BoardGame = (props: ComponentProps) => {
     }
 
     if (counter === 0 && isStarted) {
-      if (xIsNext) {
-        setFinishedMatch(true);
-        handleTimeout();
-      }
+      // if (turn === 'X') {
+      setFinishedMatch(true);
+      handleTimeout();
+      // }
     }
   }, [counter, isStarted]);
 
@@ -221,8 +212,8 @@ const BoardGame = (props: ComponentProps) => {
         ) : (
           <div className=" text-xl text-bold text-yellow-500 ml-10">Timeout: 0</div>
         )}
-        <div className="text-xl text-bold text-red-500 ml-10" style={{ color: xIsNext ? 'blue' : 'red' }}>
-          Turn: {xIsNext ? 'X' : 'O'}
+        <div className="text-xl text-bold text-red-500 ml-10" style={{ color: turn === 'X' ? 'blue' : 'red' }}>
+          Turn: {turn === 'X' ? 'X' : 'O'}
         </div>
       </div>
       <Modal

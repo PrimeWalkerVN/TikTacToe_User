@@ -76,7 +76,6 @@ const Game: React.FC = (props: any) => {
 
   useEffect(() => {
     resetGame();
-    console.log('call reset');
   }, [currentMatch]);
 
   useEffect(() => {
@@ -96,7 +95,7 @@ const Game: React.FC = (props: any) => {
 
         if (roomInfo.player2) {
           setPlayer2(roomInfo.player2);
-          setPlayer1Status(roomInfo.player2Status);
+          setPlayer2Status(roomInfo.player2Status);
           checkPlayer(roomInfo.player2.username);
         }
       }
@@ -107,6 +106,7 @@ const Game: React.FC = (props: any) => {
       Socket.readyTrigger(id, false);
       Socket.leaveChair(id);
       Socket.leaveRoom(id);
+      if (isStarted) handleLose([]);
     };
   }, [id]);
 
@@ -136,11 +136,11 @@ const Game: React.FC = (props: any) => {
   };
 
   const leaveChair = () => {
-    Socket.readyTrigger(id, false);
     if (isStarted) {
       Notification('error', 'Please finish this game!');
       return;
     }
+    Socket.readyTrigger(id, false);
     if (isPlayer) {
       Socket.leaveChair(id);
       setIsPlayer(false);
@@ -149,13 +149,12 @@ const Game: React.FC = (props: any) => {
 
   const leaveRoomHandler = () => {
     if (isPlayer) {
-      Socket.leaveChair(id);
-      setIsPlayer(false);
-      setIsStarted(false);
-
       // leave room khi dang choi
       // check => isPlayer 1 || 2 => xu thua
       if (isStarted) handleLose([]);
+      Socket.leaveChair(id);
+      setIsPlayer(false);
+      // setIsStarted(false);
     }
     Socket.leaveRoom(id);
     history.push('/dashboard');
@@ -164,17 +163,28 @@ const Game: React.FC = (props: any) => {
   // user when user leave room => user do' thua
   const handleLose = (winLine: any) => {
     if (isPlayer) {
-      const loser: any = player1?.username === user?.username ? player1?._id : player2?._id;
-      const winner: any = player1?._id === loser?._id ? player2?._id : player1?._id;
-      const data = {
-        roomId: id,
-        winner,
-        loser,
-        winLine,
-        messages: chats,
-        isDraw: false
-      };
-      Socket.finishGame(data);
+      // const loser: any = player1?._id === user?._id ? player1?._id : player2?._id;
+      // const winner: any = player1?._id === loser?._id ? player2?._id : player1?._id;
+      // const loser: any = user._id;
+      // const winner: any = player1.username === loser.username ? player2._id : player1._id; // loi logic?
+      let winner: string;
+      const loser: string = user._id;
+      if (loser === player1._id) {
+        winner = player2._id;
+      } else {
+        winner = player1._id;
+      }
+      if (winner !== loser) {
+        const data = {
+          roomId: id,
+          winner,
+          loser,
+          winLine,
+          messages: chats,
+          isDraw: false
+        };
+        Socket.finishGame(data);
+      }
     }
   };
 
@@ -187,7 +197,7 @@ const Game: React.FC = (props: any) => {
   };
   const resetGame = () => {
     setFinishedMatch(false);
-    setCurrentBoard([]);
+    // setCurrentBoard([]);
   };
 
   // xu thua luc tat tab, quay lai => cho thua
