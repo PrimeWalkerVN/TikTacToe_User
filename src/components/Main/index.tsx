@@ -93,7 +93,7 @@ const Main = () => {
     }
   };
   const handleQuickPlay = () => {
-    console.log('Quick play');
+    // console.log('Quick play');
   };
   const acceptInvitation = async (roomId: any) => {
     if (roomId) {

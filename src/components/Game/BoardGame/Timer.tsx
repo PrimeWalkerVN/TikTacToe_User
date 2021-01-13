@@ -12,7 +12,7 @@ const Timer = (props: any) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [setCounter]);
 
   return <div className=" text-xl text-bold text-yellow-500 ml-10">Timeout: {count}</div>;
 };

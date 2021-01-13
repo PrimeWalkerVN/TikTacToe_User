@@ -11,6 +11,7 @@ import Timer from './Timer';
 interface ComponentProps {
   player1: any;
   player2: any;
+  updatePlayer: any;
   isStarted: any;
   chats: any;
   currentBoard: any;
@@ -24,6 +25,7 @@ const BoardGame = (props: ComponentProps) => {
   const {
     player1,
     player2,
+    updatePlayer,
     isStarted,
     chats,
     finishedMatch,
@@ -77,7 +79,7 @@ const BoardGame = (props: ComponentProps) => {
       setIsClearBoard(false);
       resetData();
     }
-  }, [isClearBoard]);
+  }, [isClearBoard, setIsClearBoard]);
 
   useEffect(() => {
     Socket.subNewPlay((err: any, data: any) => {
@@ -107,9 +109,10 @@ const BoardGame = (props: ComponentProps) => {
       setIsModal(true);
       setFinishedMatch(true);
       setWinning(data?.winLine ?? null);
+      updatePlayer(data.winner, data.loser);
     });
     // }
-  }, [player1, player2, setFinishedMatch]);
+  }, [player1, player2, setFinishedMatch, updatePlayer]);
 
   const handleWin = (winLine: any) => {
     const data = {

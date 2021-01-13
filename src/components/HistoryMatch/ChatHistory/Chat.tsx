@@ -1,11 +1,5 @@
-import { Avatar, Button, Comment, Form, Input, List } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import moment from 'moment';
-import Socket from '../../../socket/socket';
-import { RootState } from '../../../types/Reducer';
-
-const { TextArea } = Input;
+import { Comment, List } from 'antd';
+import React from 'react';
 
 const Chat = (props: any) => {
   const { data = [] } = props;

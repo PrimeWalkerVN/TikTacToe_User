@@ -7,9 +7,9 @@ const renderRank = (rank: any) => {
   return <div className="text-xl font-bold mx-5 ">#{rank}.</div>;
 };
 const PlayerRank = (props: any) => {
-  const { rank, username } = props;
+  const { rank, username, handleDetail } = props;
   return (
-    <div className="flex flex-row">
+    <div onClick={handleDetail} className="flex flex-row bg-gray-100 my-2 py-1 hover:bg-gray-200 cursor-pointer">
       {renderRank(rank)}
       <div className="text-xl text-center w-44 text-bold truncate">{username}</div>
     </div>

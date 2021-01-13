@@ -285,6 +285,30 @@ const Game: React.FC = (props: any) => {
       Socket.inviteUser(id, user, item._id);
     }
   };
+
+  const updatePlayer = useCallback(
+    (winner: any, loser: any) => {
+      let newPlayer1;
+      let newPlayer2;
+      if (player1 === null) return;
+      if (player2 === null) return;
+      if (player1?._id === winner) {
+        newPlayer1 = { ...player1, cup: player1?.cup + 1, win: player1?.win + 1 };
+        if (player2?._id === loser) {
+          newPlayer2 = { ...player2, cup: player2?.cup - 1, lose: player2?.lose + 1 };
+        }
+      } else {
+        newPlayer2 = { ...player2, cup: player2?.cup + 1, win: player2?.win + 1 };
+        if (player1?._id === loser) {
+          newPlayer1 = { ...player1, cup: player1?.cup - 1, lose: player1?.lose + 1 };
+        }
+      }
+      if (newPlayer1) setPlayer1(newPlayer1);
+      if (newPlayer2) setPlayer2(newPlayer2);
+    },
+    [player1, player2, setPlayer1, setPlayer2]
+  );
+
   return (
     <div className="flex flex-row p-10 h-screen overflow-auto">
       <div style={{ flex: 0.8 }} className="flex flex-col">
@@ -297,6 +321,7 @@ const Game: React.FC = (props: any) => {
             <BoardGame
               player1={player1}
               player2={player2}
+              updatePlayer={updatePlayer}
               isStarted={isStarted}
               chats={chats}
               currentBoard={currentBoard}

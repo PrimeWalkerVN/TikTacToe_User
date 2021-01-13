@@ -1,6 +1,5 @@
 import { Alert, Button, Form, Input } from 'antd';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import usersApi from '../../api/userApi';
 import Loading from '../common/Loading';
 import Notification from '../common/Notification';

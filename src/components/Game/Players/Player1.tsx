@@ -1,6 +1,5 @@
 import { Avatar, Button } from 'antd';
 import React from 'react';
-import usersApi from '../../../api/userApi';
 import PlayerInfo from './PlayerInfo';
 
 const Player1 = (props: any) => {

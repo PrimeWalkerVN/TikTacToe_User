@@ -3,7 +3,7 @@ import React from 'react';
 import PlayerInfo from './PlayerInfo';
 
 const Player1 = (props: any) => {
-  const { item, user, winner = {}, loser = {} } = props;
+  const { item, user, winner = {} } = props;
 
   return (
     <div className="flex flex-row justify-between items-center">

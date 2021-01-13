@@ -1,4 +1,4 @@
-import { Avatar, Button } from 'antd';
+import { Avatar } from 'antd';
 import React from 'react';
 import PlayerInfo from './PlayerInfo';
 

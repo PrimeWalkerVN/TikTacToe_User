@@ -14,7 +14,7 @@ const Profile = (props: any) => {
   const [user, setUser] = useState<any>(null);
   const [isModal, setIsModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [matches, setMatches] = useState([]);
+  const [matches, setMatches] = useState<any>([]);
   const history = useHistory();
   useEffect(() => {
     const { user } = location.state;
@@ -28,7 +28,7 @@ const Profile = (props: any) => {
     setIsLoading(true);
     try {
       const res = await matchApi.getAllByUser({ userId });
-      setMatches(res.body);
+      setMatches(res.body.reverse());
     } catch (err) {
       Notification('error', 'Error', "Can't get matches");
     } finally {
@@ -81,10 +81,10 @@ const Profile = (props: any) => {
           bordered
           dataSource={matches}
           pagination={{ defaultPageSize: 8 }}
-          renderItem={(item: any, index: any) => (
+          renderItem={(item: any) => (
             <List.Item>
               <div onClick={() => handleDetail(item)} className="text-xl font-bold cursor-pointer">
-                Match {index + 1}
+                Match {matches.indexOf(item) + 1}
               </div>
             </List.Item>
           )}
