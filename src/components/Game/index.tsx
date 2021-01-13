@@ -11,6 +11,7 @@ import Features from './Features.tsx/Features';
 import Matches from './Matches/Matches';
 import Player1 from './Players/Player1';
 import Player2 from './Players/Player2';
+import Invites from './Viewers/Invites';
 import Viewers from './Viewers/Viewers';
 
 interface ChatType {
@@ -77,6 +78,19 @@ const Game: React.FC = (props: any) => {
   useEffect(() => {
     resetGame();
   }, [currentMatch]);
+  useEffect(() => {
+    return () => {
+      if (isPlayer) {
+        // leave room khi dang choi
+        // check => isPlayer 1 || 2 => xu thua
+        if (isStarted) handleLose([]);
+        Socket.leaveChair(id);
+        setIsPlayer(false);
+        // setIsStarted(false);
+      }
+      Socket.leaveRoom(id);
+    };
+  }, [id, isPlayer, isStarted]);
 
   useEffect(() => {
     Socket.joinRoom(id);
@@ -197,11 +211,33 @@ const Game: React.FC = (props: any) => {
   };
   const resetGame = () => {
     setFinishedMatch(false);
+    setCurrentBoard([]);
     // setCurrentBoard([]);
   };
 
   // xu thua luc tat tab, quay lai => cho thua
 
+  const filterUsersInvite = (viewers: any, usersOnline: any) => {
+    const res: any = usersOnline.filter((item: any) => {
+      let duplicate = false;
+      viewers.forEach((element: any) => {
+        if (element._id === item._id) {
+          duplicate = true;
+          return true;
+        }
+        return false;
+      });
+      return !duplicate;
+    });
+
+    return res;
+  };
+
+  const handleInvite = (item: any) => {
+    if (id) {
+      Socket.inviteUser(id, user, item._id);
+    }
+  };
   return (
     <div className="flex flex-row p-10 h-screen overflow-auto">
       <div style={{ flex: 0.8 }} className="flex flex-col">
@@ -262,7 +298,7 @@ const Game: React.FC = (props: any) => {
             <Viewers viewers={viewers} user={user} />
           </TabPane>
           <TabPane tab="Invite" key="3">
-            <Viewers viewers={usersOnline} user={user} invite />
+            <Invites users={filterUsersInvite(viewers, usersOnline)} user={user} handleInvite={handleInvite} />
           </TabPane>
         </Tabs>
       </div>

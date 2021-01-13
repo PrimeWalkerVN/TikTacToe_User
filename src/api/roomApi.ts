@@ -3,6 +3,7 @@ import axiosClient from './axiosClient';
 interface typeApi {
   create: any;
   joinRoom: any;
+  joinRoomInvite: any;
   getInfoRoom: any;
 }
 
@@ -18,6 +19,10 @@ const roomApi: typeApi = {
   getInfoRoom: (params: any) => {
     const url = `/rooms/info/${params.roomId}`;
     return axiosClient.get(url);
+  },
+  joinRoomInvite: (params: any) => {
+    const url = `/rooms/join-invite/${params.roomId}`;
+    return axiosClient.post(url, params);
   }
 };
 

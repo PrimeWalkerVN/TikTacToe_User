@@ -1,19 +1,20 @@
+import { Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import matchApi from '../../api/matchApi';
 import roomApi from '../../api/roomApi';
+import usersApi from '../../api/userApi';
+import { setRoomsAction, setUsersOnline } from '../../redux/reducers/roomReducer';
 import Socket from '../../socket/socket';
 import { RootState } from '../../types/Reducer';
 import Loading from '../common/Loading';
 import Notification from '../common/Notification';
 import { AddBoard } from './AddBoard';
-import RoomLists from './RoomLists/RoomLists';
 import LeaderBoard from './LeaderBoard';
-import UsersStatus from './UserStatus';
-import { setRoomsAction, setUsersOnline } from '../../redux/reducers/roomReducer';
-import matchApi from '../../api/matchApi';
 import { QuickPlay } from './QuickPlay';
-import usersApi from '../../api/userApi';
+import RoomLists from './RoomLists/RoomLists';
+import UsersStatus from './UserStatus';
 
 const Main = () => {
   const history = useHistory();
@@ -25,6 +26,8 @@ const Main = () => {
   const [users, setUsers] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [ranks, setRanks] = useState([]);
+  const [isModalInvite, setIsModalInvite] = useState(false);
+  const [dataInvite, setDataInvite] = useState<any>(null);
 
   useEffect(() => {
     setRooms(roomData);
@@ -39,6 +42,26 @@ const Main = () => {
     });
   }, [dispatch, roomData, usersOnline]);
 
+  useEffect(() => {
+    let isInvite = true;
+    if (isInvite) {
+      Socket.subHaveInvitation((err: any, data: any) => {
+        if (err) return;
+
+        if (data.userId === user._id) {
+          if (data) {
+            setDataInvite(data);
+            setIsModalInvite(data);
+            setIsModalInvite(true);
+          }
+        }
+      });
+    }
+    return () => {
+      isInvite = false;
+    };
+  }, []);
+
   const createNewRoom = async (values: any) => {
     setIsLoading(true);
     const params = { creator: user, ...values };
@@ -46,6 +69,7 @@ const Main = () => {
       const res: any = await roomApi.create(params);
       const resMatch: any = await matchApi.create({ roomId: res.body.roomId });
       Socket.createNewRoom(res.body.roomId, resMatch.body._id);
+      Socket.offSubHaveInvitation();
       history.push(`/dashboard/room/${res.body.roomId}`, {
         roomData: { roomInfo: { currentMatch: resMatch.body._id }, matches: [resMatch.body] }
       });
@@ -77,6 +101,27 @@ const Main = () => {
   };
   const handleQuickPlay = () => {
     console.log('Quick play');
+  };
+  const acceptInvitation = async (roomId: any) => {
+    if (roomId) {
+      const params = { roomId };
+      setIsLoading(true);
+      try {
+        const res: any = await roomApi.joinRoomInvite(params);
+        if (res) {
+          history.push(`/dashboard/room/${roomId}`, { roomData: res.body });
+        }
+      } catch (err) {
+        if (err.response) Notification('error', 'Error', err.response.data.message);
+        else Notification('error', 'Error', err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+  const cancelInvitation = () => {
+    setIsModalInvite(false);
+    setDataInvite(null);
   };
 
   useEffect(() => {
@@ -112,6 +157,17 @@ const Main = () => {
         <div className="text-bold text-xl my-5">Users online</div>
         <UsersStatus users={users} user={user} />
       </div>
+      <Modal
+        visible={isModalInvite}
+        onCancel={cancelInvitation}
+        centered
+        closable={false}
+        onOk={() => acceptInvitation(dataInvite.roomId)}
+      >
+        <div className="mx-5 text-2xl font-bold text-center">
+          {dataInvite?.userInvite?.username} invite you to solo!
+        </div>
+      </Modal>
     </div>
   );
 };

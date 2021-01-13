@@ -50,7 +50,7 @@ const RoomLists: React.FC<Props> = props => {
       />
       <List
         grid={{ gutter: 16, column: 5 }}
-        pagination={{ defaultPageSize: 8 }}
+        pagination={{ defaultPageSize: 10 }}
         dataSource={result}
         renderItem={item => {
           return (
