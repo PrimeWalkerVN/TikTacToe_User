@@ -38,10 +38,14 @@
 .isO {
     color: red;
 }
+.currentPos {
+    background-color: greenyellow;
+}
 
 .winning {
     background-color: yellow;
 }
+
 
 .custom-search > span > span > .ant-input-search-button {
     display: flex;

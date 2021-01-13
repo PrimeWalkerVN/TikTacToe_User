@@ -43,6 +43,7 @@ const BoardGame = (props: ComponentProps) => {
       .fill(0)
       .map(() => new Array(ncols).fill(null))
   );
+  const [currentPos, setCurrentPos] = useState<any>(null);
   const [isModal, setIsModal] = useState(false);
   const [winnerTurn, setWinnerTurn] = useState<any>('');
 
@@ -51,16 +52,17 @@ const BoardGame = (props: ComponentProps) => {
 
   useEffect(() => {
     // setGameData(currentBoard);
-    const newSquares = Array(nrows)
-      .fill(0)
-      .map(() => new Array(ncols).fill(null));
 
     if (currentBoard.length > 0) {
+      const newSquares = Array(nrows)
+        .fill(0)
+        .map(() => new Array(ncols).fill(null));
       currentBoard.forEach((value: any) => {
         newSquares[value.x][value.y] = value.turn;
       });
       setSquares(newSquares);
       setTurn(currentBoard[currentBoard.length - 1].turn === 'X' ? 'O' : 'X');
+      setCurrentPos({ x: currentBoard[currentBoard.length - 1].x, y: currentBoard[currentBoard.length - 1].y });
     }
   }, [currentBoard]);
 
@@ -85,6 +87,7 @@ const BoardGame = (props: ComponentProps) => {
       const newSquares = [...squares];
       newSquares[x][y] = turn;
       setTurn(turn === 'O' ? 'X' : 'O');
+      setCurrentPos({ x, y });
       setSquares(newSquares);
       stopTimer(-1);
       startTimer();
@@ -159,10 +162,11 @@ const BoardGame = (props: ComponentProps) => {
         .fill(0)
         .map(() => new Array(ncols).fill(null))
     );
+    setCurrentPos(null);
   };
 
   const startTimer = () => {
-    setCounter(559);
+    setCounter(10);
   };
 
   const stopTimer = (value: number) => {
@@ -170,17 +174,26 @@ const BoardGame = (props: ComponentProps) => {
   };
 
   const handleTimeout = () => {
-    const data = {
-      roomId: id,
-      winner: turn === 'O' ? player1._id : player2._id,
-      loser: turn === 'O' ? player2._id : player1._id,
-      winLine: [],
-      messages: chats,
-      isDraw: false
-    };
+    let winner: string;
+    const loser: string = user._id;
+    if (loser === player1._id) {
+      winner = player2._id;
+    } else {
+      winner = player1._id;
+    }
+    if (winner !== loser) {
+      const data = {
+        roomId: id,
+        winner,
+        loser,
+        winLine: [],
+        messages: chats,
+        isDraw: false
+      };
+      Socket.finishGame(data);
+    }
 
     stopTimer(-1);
-    Socket.finishGame(data);
   };
 
   useEffect(() => {
@@ -203,10 +216,16 @@ const BoardGame = (props: ComponentProps) => {
   return (
     <div className="flex flex-col justify-center w-full">
       <div style={{ flex: 0.8 }} className="flex justify-center">
-        <Boards winning={winning} squares={squares} numCol={ncols} numRow={nrows} onClick={handleClick} />
+        <Boards
+          winning={winning}
+          squares={squares}
+          numCol={ncols}
+          numRow={nrows}
+          currentPos={currentPos}
+          onClick={handleClick}
+        />
       </div>
       <div className="flex flex-row mt-5 items-center justify-center w-full">
-        <Button type="primary">Claim draw</Button>
         {counter > 0 ? (
           <Timer counter={counter} setCounter={setCounter} />
         ) : (

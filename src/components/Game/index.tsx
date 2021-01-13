@@ -1,5 +1,6 @@
 import { Tabs } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useBeforeunload } from 'react-beforeunload';
 import { useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import Socket from '../../socket/socket';
@@ -25,6 +26,7 @@ const Game: React.FC = (props: any) => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
   const [chats, setChats] = useState<ChatType[]>([]);
+  const { location } = props;
 
   const { TabPane } = Tabs;
   const user: any = useSelector((state: RootState) => state.user.user);
@@ -41,7 +43,14 @@ const Game: React.FC = (props: any) => {
   const [currentBoard, setCurrentBoard] = useState([]);
   const [finishedMatch, setFinishedMatch] = useState(false);
   const [isClearBoard, setIsClearBoard] = useState(false);
+  const [locationKeys, setLocationKeys] = useState<any>([]);
 
+  const checkPlayer = useCallback(
+    (username: any) => {
+      if (username === user.username) setIsPlayer(true);
+    },
+    [user]
+  );
   useEffect(() => {
     Socket.subViewerTrigger((err: any, data: any) => {
       if (err) return;
@@ -73,29 +82,16 @@ const Game: React.FC = (props: any) => {
         setIsClearBoard(true);
       }
     });
-  }, []);
+  }, [checkPlayer]);
 
   useEffect(() => {
     resetGame();
   }, [currentMatch]);
-  useEffect(() => {
-    return () => {
-      if (isPlayer) {
-        // leave room khi dang choi
-        // check => isPlayer 1 || 2 => xu thua
-        if (isStarted) handleLose([]);
-        Socket.leaveChair(id);
-        setIsPlayer(false);
-        // setIsStarted(false);
-      }
-      Socket.leaveRoom(id);
-    };
-  }, [id, isPlayer, isStarted]);
 
   useEffect(() => {
     Socket.joinRoom(id);
-    if (props.location.state) {
-      const { roomData } = props.location.state;
+    if (location) {
+      const { roomData } = location.state;
       if (roomData) {
         const { roomInfo, matches } = roomData;
         if (matches) setMatches(matches);
@@ -114,19 +110,62 @@ const Game: React.FC = (props: any) => {
         }
       }
     }
+    // return () => {
+    //   setIsPlayer(false);
+    //   Socket.readyTrigger(id, false);
+    //   Socket.leaveChair(id);
+    //   Socket.leaveRoom(id);
+    //   if (isStarted) handleLose([]);
+    // };
+  }, [checkPlayer, id, location]);
 
-    return () => {
-      setIsPlayer(false);
-      Socket.readyTrigger(id, false);
-      Socket.leaveChair(id);
-      Socket.leaveRoom(id);
+  useBeforeunload(async () => {
+    if (isPlayer) {
+      // leave room khi dang choi
+      // check => isPlayer 1 || 2 => xu thua
       if (isStarted) handleLose([]);
-    };
-  }, [id]);
+      await Socket.leaveChair(id);
+      setIsPlayer(false);
+      // setIsStarted(false);
+    }
+    await Socket.leaveRoom(id);
+  });
 
-  const checkPlayer = (username: any) => {
-    if (username === user.username) setIsPlayer(true);
-  };
+  useEffect(() => {
+    return history.listen((location: any) => {
+      if (history.action === 'PUSH') {
+        setLocationKeys([location.key]);
+        if (isPlayer) {
+          // leave room khi dang choi
+          // check => isPlayer 1 || 2 => xu thua
+          if (isStarted) handleLose([]);
+          Socket.leaveChair(id);
+          setIsPlayer(false);
+          // setIsStarted(false);
+        }
+        Socket.leaveRoom(id);
+      }
+      if (history.action === 'POP') {
+        if (locationKeys[1] === location.key) {
+          setLocationKeys(([_, ...keys]: any) => keys);
+
+          // Handle forward event
+        } else {
+          setLocationKeys((keys: any) => [location.key, ...keys]);
+          if (isPlayer) {
+            // leave room khi dang choi
+            // check => isPlayer 1 || 2 => xu thua
+            if (isStarted) handleLose([]);
+            Socket.leaveChair(id);
+            setIsPlayer(false);
+            // setIsStarted(false);
+          }
+          Socket.leaveRoom(id);
+          // Handle back event
+        }
+      }
+    });
+  }, [history, id, isPlayer, isStarted, locationKeys]);
 
   const pickPlayer1 = () => {
     if (isPlayer) return;
@@ -140,6 +179,10 @@ const Game: React.FC = (props: any) => {
   };
 
   const setReadyPlayer = (status: any) => {
+    if (isStarted) {
+      Notification('error', 'Please finish this game!');
+      return;
+    }
     if (isPlayer) {
       if (finishedMatch) {
         Notification('error', 'Please start new game!');
@@ -174,7 +217,7 @@ const Game: React.FC = (props: any) => {
     history.push('/dashboard');
   };
 
-  // user when user leave room => user do' thua
+  // when user leave room => user do' thua
   const handleLose = (winLine: any) => {
     if (isPlayer) {
       // const loser: any = player1?._id === user?._id ? player1?._id : player2?._id;
@@ -207,11 +250,14 @@ const Game: React.FC = (props: any) => {
   };
 
   const startNewGame = () => {
+    if (!isPlayer) {
+      Notification('error', 'Please pick player to start new game!');
+      return;
+    }
     Socket.startNewMatch(id);
   };
   const resetGame = () => {
     setFinishedMatch(false);
-    setCurrentBoard([]);
     // setCurrentBoard([]);
   };
 

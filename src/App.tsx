@@ -35,8 +35,9 @@ const App: React.FC = () => {
           }
         } catch (e) {
           if (e.response) Notification('error', 'Error', e.response.data.message);
+        } finally {
+          setIsLoading(false);
         }
-        setIsLoading(false);
       };
       callMe();
     } else setIsLoading(false);

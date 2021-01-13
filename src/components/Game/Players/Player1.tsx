@@ -30,7 +30,7 @@ const Player1 = (props: any) => {
               <Avatar size={90} src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png " />
               <div className="flex flex-col w-full">
                 {item.username === user.username ? (
-                  <div className="truncate text-blue-600 ml-2 text-xl font-bold">{item.fullName}</div>
+                  <div className="truncate text-pink-600 ml-2 text-xl font-bold">{item.fullName}</div>
                 ) : (
                   <div className="truncate ml-2 text-xl font-bold">{item.fullName}</div>
                 )}
@@ -49,7 +49,7 @@ const Player1 = (props: any) => {
           )}
         </div>
       </div>
-      <p className="text-4xl text-red-700 text-bold justify-self-start mx-10">0</p>
+      <p className="text-4xl text-red-700 text-bold justify-self-start mx-10">{item && item.cup}</p>
     </div>
   );
 };

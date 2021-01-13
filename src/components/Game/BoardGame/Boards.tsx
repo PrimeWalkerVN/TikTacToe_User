@@ -2,7 +2,7 @@ import React from 'react';
 import Square from './Square';
 
 const Boards = (props: any) => {
-  const { squares, numRow, numCol, onClick, winning } = props;
+  const { squares, numRow, numCol, onClick, winning, currentPos } = props;
 
   const checkWin = (i: any, j: any) => {
     if (winning === null) return false;
@@ -10,9 +10,17 @@ const Boards = (props: any) => {
       return item.x === i && item.y === j;
     });
   };
+  const checkCurrent = (i: any, j: any) => {
+    if (currentPos)
+      if (currentPos.x === i && currentPos.y === j) return true;
+      else return false;
+    return false;
+  };
   const renderSquare = (i: any, j: any, key: any) => {
     const win = checkWin(i, j);
-    return <Square isWinning={win} onClick={() => onClick(i, j)} key={key} value={squares[i][j]} />;
+    const current = checkCurrent(i, j);
+
+    return <Square current={current} isWinning={win} onClick={() => onClick(i, j)} key={key} value={squares[i][j]} />;
   };
 
   const renderBoard = () => {

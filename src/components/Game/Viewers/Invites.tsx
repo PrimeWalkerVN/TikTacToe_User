@@ -1,7 +1,5 @@
 import React from 'react';
-import Socket from '../../../socket/socket';
 import Invite from './Invite';
-import Viewer from './Viewer';
 
 const Invites = (props: any) => {
   const { users, user, handleInvite } = props;

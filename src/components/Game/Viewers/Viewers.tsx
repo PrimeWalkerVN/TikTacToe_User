@@ -1,5 +1,4 @@
 import React from 'react';
-import Invite from './Invite';
 import Viewer from './Viewer';
 
 const Viewers = (props: any) => {
