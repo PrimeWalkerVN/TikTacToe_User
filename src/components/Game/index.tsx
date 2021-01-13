@@ -236,6 +236,7 @@ const Game: React.FC = (props: any) => {
           roomId: id,
           winner,
           loser,
+          winnerTurn: player1._id === winner ? 'O' : 'X',
           winLine,
           messages: chats,
           isDraw: false

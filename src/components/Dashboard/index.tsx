@@ -12,6 +12,7 @@ import Header from '../common/Header';
 const Game = React.lazy(() => import('../Game'));
 const Main = React.lazy(() => import('../Main'));
 const Profile = React.lazy(() => import('../Profile'));
+const HistoryMatch = React.lazy(() => import('../HistoryMatch'));
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
@@ -53,6 +54,7 @@ const Dashboard: React.FC = () => {
       <Switch>
         <PrivateRoute path="/dashboard/room/:id" component={Game} />
         <PrivateRoute path="/dashboard/profile" component={Profile} />
+        <PrivateRoute path="/dashboard/match/detail" component={HistoryMatch} />
         <PrivateRoute path="/" component={Main} />
       </Switch>
     </div>

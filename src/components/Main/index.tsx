@@ -43,24 +43,17 @@ const Main = () => {
   }, [dispatch, roomData, usersOnline]);
 
   useEffect(() => {
-    let isInvite = true;
-    if (isInvite) {
-      Socket.subHaveInvitation((err: any, data: any) => {
-        if (err) return;
-
-        if (data.userId === user._id) {
-          if (data) {
-            setDataInvite(data);
-            setIsModalInvite(data);
-            setIsModalInvite(true);
-          }
+    Socket.subHaveInvitation((err: any, data: any) => {
+      if (err) return;
+      if (data.userId === user._id) {
+        if (data) {
+          setDataInvite(data);
+          setIsModalInvite(true);
         }
-      });
-    }
-    return () => {
-      isInvite = false;
-    };
-  }, []);
+      }
+    });
+    return () => Socket.offSubHaveInvitation();
+  }, [isModalInvite, user._id]);
 
   const createNewRoom = async (values: any) => {
     setIsLoading(true);

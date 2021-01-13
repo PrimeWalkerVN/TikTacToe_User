@@ -1,6 +1,7 @@
 import Avatar from 'antd/lib/avatar/avatar';
 import React, { useEffect, useState } from 'react';
 import { Button, Divider, List, Modal } from 'antd';
+import { useHistory } from 'react-router-dom';
 import CupIcon from '../../assets/images/players/icons8-world_cup.png';
 import WinIcon from '../../assets/images/players/icons8-win.png';
 import LoseIcon from '../../assets/images/players/icons8-squinting_face_with_tongue.png';
@@ -14,6 +15,7 @@ const Profile = (props: any) => {
   const [isModal, setIsModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [matches, setMatches] = useState([]);
+  const history = useHistory();
   useEffect(() => {
     const { user } = location.state;
     if (user) {
@@ -32,6 +34,10 @@ const Profile = (props: any) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDetail = (item: any) => {
+    if (item) history.push('/dashboard/match/detail', { item });
   };
   return (
     <div className="w-full h-screen bg-red-400 flex justify-center items-center">
@@ -77,7 +83,9 @@ const Profile = (props: any) => {
           pagination={{ defaultPageSize: 8 }}
           renderItem={(item: any, index: any) => (
             <List.Item>
-              <div className="text-xl font-bold cursor-pointer">Match {index + 1}</div>
+              <div onClick={() => handleDetail(item)} className="text-xl font-bold cursor-pointer">
+                Match {index + 1}
+              </div>
             </List.Item>
           )}
         />

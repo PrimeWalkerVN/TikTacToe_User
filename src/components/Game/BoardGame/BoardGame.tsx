@@ -1,4 +1,4 @@
-import { Button, Modal } from 'antd';
+import { Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -117,6 +117,7 @@ const BoardGame = (props: ComponentProps) => {
       winner: user._id,
       loser: user._id === player1._id ? player2._id : player1._id,
       winLine,
+      winnerTurn: turn,
       messages: chats,
       isDraw: false
     };
@@ -144,6 +145,7 @@ const BoardGame = (props: ComponentProps) => {
 
     if (squares[i][j] !== null) return;
     const position = { turn, x: i, y: j };
+    Socket.play(id, position);
     const playRes: any = await play(turn, i, j);
     if (playRes) {
       if (playRes?.isDraw ?? false) {
@@ -152,7 +154,6 @@ const BoardGame = (props: ComponentProps) => {
         handleWin(playRes);
       }
     }
-    Socket.play(id, position);
   };
 
   const resetData = () => {
@@ -166,7 +167,7 @@ const BoardGame = (props: ComponentProps) => {
   };
 
   const startTimer = () => {
-    setCounter(10);
+    setCounter(59);
   };
 
   const stopTimer = (value: number) => {
@@ -186,6 +187,7 @@ const BoardGame = (props: ComponentProps) => {
         roomId: id,
         winner,
         loser,
+        winnerTurn: turn === 'O' ? 'X' : 'O',
         winLine: [],
         messages: chats,
         isDraw: false

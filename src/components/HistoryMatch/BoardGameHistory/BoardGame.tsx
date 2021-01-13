@@ -1,4 +1,3 @@
-import { Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -6,13 +5,12 @@ import { RootState } from '../../../types/Reducer';
 import Boards from './Boards';
 
 interface ComponentProps {
-  player1: any;
-  player2: any;
   gameData: any;
+  winLine: any;
 }
 
 const BoardGame = (props: ComponentProps) => {
-  const { player1, player2, gameData } = props;
+  const { gameData = [], winLine = [] } = props;
   const nrows: any = 20;
   const ncols: any = 20;
 
@@ -34,10 +32,10 @@ const BoardGame = (props: ComponentProps) => {
       });
       setSquares(newSquares);
     }
-  }, [gameData]);
-
-  const { id } = useParams<{ id: string }>();
-  const user: any = useSelector((state: RootState) => state.user.user);
+    if (winLine) {
+      setWinning(winLine);
+    }
+  }, [gameData, winLine]);
 
   return (
     <div className="flex flex-col justify-center w-full">
