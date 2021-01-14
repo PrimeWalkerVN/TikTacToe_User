@@ -35,11 +35,13 @@ const Profile = (props: any) => {
     }
   }, [dispatch]);
   useEffect(() => {
-    const { user } = location.state;
-    if (user) {
-      getUserInfo(user._id);
-      getMe();
-      getMatches(user._id);
+    if (location) {
+      const { user } = location.state;
+      if (user) {
+        getUserInfo(user._id);
+        getMe();
+        getMatches(user._id);
+      }
     }
   }, [getMe, location]);
 

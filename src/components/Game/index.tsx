@@ -140,12 +140,12 @@ const Game: React.FC = (props: any) => {
           // leave room khi dang choi
           // check => isPlayer 1 || 2 => xu thua
 
-          setIsPlayer(false);
-          if (isStarted) await handleLose([]);
           Socket.leaveChair(id);
+          setIsPlayer(false);
+          if (isStarted) handleLose([]);
           // setIsStarted(false);
         }
-        Socket.leaveRoom(id);
+        await Socket.leaveRoom(id);
       }
       if (history.action === 'POP') {
         if (locationKeys[1] === location.key) {
@@ -158,13 +158,14 @@ const Game: React.FC = (props: any) => {
           if (isPlayer) {
             // leave room khi dang choi
             // check => isPlayer 1 || 2 => xu thua
-
+            Socket.readyTrigger(id, false);
+            Socket.leaveChair(id);
             setIsPlayer(false);
             if (isStarted) handleLose([]);
-            Socket.leaveChair(id);
+
             // setIsStarted(false);
           }
-          Socket.leaveRoom(id);
+          await Socket.leaveRoom(id);
           // Handle back event
         }
       }
