@@ -12,7 +12,6 @@ import Register from './components/auth/Register';
 import ResetPassword from './components/auth/ResetPassword';
 import Loading from './components/common/Loading';
 import NotFound from './components/common/Notfound';
-import Notification from './components/common/Notification';
 import { setLogged, setUser } from './redux/reducers/userReducer';
 
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -34,7 +33,8 @@ const App: React.FC = () => {
             dispatch(setLogged(true));
           }
         } catch (e) {
-          if (e.response) Notification('error', 'Error', e.response.data.message);
+          // if (e.response) Notification('error', 'Error', e.response.data.message);
+          localStorage.removeItem('access_token');
         } finally {
           setIsLoading(false);
         }

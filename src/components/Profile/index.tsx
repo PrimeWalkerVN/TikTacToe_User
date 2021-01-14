@@ -1,28 +1,61 @@
 import Avatar from 'antd/lib/avatar/avatar';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Divider, List, Modal } from 'antd';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import CupIcon from '../../assets/images/players/icons8-world_cup.png';
 import WinIcon from '../../assets/images/players/icons8-win.png';
 import LoseIcon from '../../assets/images/players/icons8-squinting_face_with_tongue.png';
 import Loading from '../common/Loading';
 import matchApi from '../../api/matchApi';
 import Notification from '../common/Notification';
+import usersApi from '../../api/userApi';
+import { setUser } from '../../redux/reducers/userReducer';
 
 const Profile = (props: any) => {
   const { location } = props;
-  const [user, setUser] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<any>(null);
   const [isModal, setIsModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [matches, setMatches] = useState<any>([]);
   const history = useHistory();
+  const dispatch = useDispatch();
   useEffect(() => {
     const { user } = location.state;
     if (user) {
-      setUser(user);
+      getUserInfo(user._id);
+      getMe();
       getMatches(user._id);
     }
   }, [location]);
+
+  const getMe = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await usersApi.getMe();
+      if (res) {
+        dispatch(setUser(res.user));
+      }
+    } catch (err) {
+      Notification('error', 'Error', "Can't get info");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [dispatch]);
+
+  const getUserInfo = async (userId: any) => {
+    setIsLoading(true);
+    try {
+      const res = await usersApi.getUser({ userId });
+      if (res) {
+        setUserInfo(res.body);
+      }
+    } catch (err) {
+      Notification('error', 'Error', "Can't get info");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const getMatches = async (userId: any) => {
     setIsLoading(true);
@@ -47,25 +80,25 @@ const Profile = (props: any) => {
           <div className="flex flex-row justify-center items-center">
             <Avatar size={200} src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
             <div className="flex flex-col items-start">
-              <div className="text-xl text-center">Username: {user && user.username}</div>
-              <div className="text-xl text-center">FullName: {user && user.fullName}</div>
-              <div className="text-xl text-center">Email:{user && user.email}</div>
+              <div className="text-xl text-center">Username: {userInfo && userInfo.username}</div>
+              <div className="text-xl text-center">FullName: {userInfo && userInfo.fullName}</div>
+              <div className="text-xl text-center">Email:{userInfo && userInfo.email}</div>
             </div>
           </div>
           <div className="flex flex-row items-center justify-around m-10 w-full">
             <div className="flex flex-row items-center">
               <img className="h-10 w-10" src={CupIcon} alt="Logo" />
-              <div className="mx-1 text-2xl">{user && user.cup}</div>
+              <div className="mx-1 text-2xl">{userInfo && userInfo.cup}</div>
             </div>
             <div className="flex flex-row items-center">
               <img className="h-10 w-10" src={WinIcon} alt="Logo" />
-              <div className="mx-1 text-2xl">{user && user.win}</div>
+              <div className="mx-1 text-2xl">{userInfo && userInfo.win}</div>
             </div>
             <div className="flex flex-row items-center">
               <img className="h-10 w-10" src={LoseIcon} alt="Logo" />
-              <div className="mx-1 text-2xl">{user && user.lose}</div>
+              <div className="mx-1 text-2xl">{userInfo && userInfo.lose}</div>
             </div>
-            <div className="text-2xl font-bold">{user && user.winRatio}%</div>
+            <div className="text-2xl font-bold">{userInfo && userInfo.winRatio}%</div>
           </div>
           <div className="flex flex-row items-center justify-around m-10 w-full">
             <Button onClick={() => setIsModal(true)} size="large" type="primary">

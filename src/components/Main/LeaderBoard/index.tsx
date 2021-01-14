@@ -20,7 +20,7 @@ const LeaderBoard = (props: any) => {
               handleDetail={() => handleDetail(item)}
               rank={index + 1}
               key={index.toString()}
-              username={item.username}
+              username={item.fullName}
             />
           ))}
       </div>
