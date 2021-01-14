@@ -139,10 +139,11 @@ const Game: React.FC = (props: any) => {
         if (isPlayer) {
           // leave room khi dang choi
           // check => isPlayer 1 || 2 => xu thua
-
+          if (isStarted) await handleLose([]);
+          Socket.readyTrigger(id, false);
           Socket.leaveChair(id);
           setIsPlayer(false);
-          if (isStarted) handleLose([]);
+
           // setIsStarted(false);
         }
         await Socket.leaveRoom(id);
@@ -158,10 +159,10 @@ const Game: React.FC = (props: any) => {
           if (isPlayer) {
             // leave room khi dang choi
             // check => isPlayer 1 || 2 => xu thua
+            if (isStarted) await handleLose([]);
             Socket.readyTrigger(id, false);
             Socket.leaveChair(id);
             setIsPlayer(false);
-            if (isStarted) handleLose([]);
 
             // setIsStarted(false);
           }
