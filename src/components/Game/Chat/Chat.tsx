@@ -1,11 +1,9 @@
 import { Avatar, Button, Comment, Form, Input, List } from 'antd';
+import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import moment from 'moment';
 import Socket from '../../../socket/socket';
 import { RootState } from '../../../types/Reducer';
-
-const { TextArea } = Input;
 
 const Chat = (props: any) => {
   const [submitting, setSubmitting] = useState(false);
@@ -35,7 +33,7 @@ const Chat = (props: any) => {
       if (err) return;
       setChats((oldChats: any) => [...oldChats, data.message]);
     });
-  }, [roomId]);
+  }, [roomId, setChats]);
 
   const handleSubmit = () => {
     if (!value) {
