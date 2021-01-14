@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
-// const ENDPOINT = 'localhost:8080';
-const ENDPOINT = 'https://tictactoe-api-v1.herokuapp.com';
+const ENDPOINT = 'localhost:8080';
+// const ENDPOINT = 'https://tictactoe-api-v1.herokuapp.com';
 
 let instance: any = null;
 

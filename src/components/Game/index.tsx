@@ -124,24 +124,25 @@ const Game: React.FC = (props: any) => {
     if (isPlayer) {
       // leave room khi dang choi
       // check => isPlayer 1 || 2 => xu thua
-      if (isStarted) handleLose([]);
-      await Socket.leaveChair(id);
       setIsPlayer(false);
+      if (isStarted) await handleLose([]);
+      await Socket.leaveChair(id);
       // setIsStarted(false);
     }
     await Socket.leaveRoom(id);
   });
 
   useEffect(() => {
-    return history.listen((location: any) => {
+    return history.listen(async (location: any) => {
       if (history.action === 'PUSH') {
         setLocationKeys([location.key]);
         if (isPlayer) {
           // leave room khi dang choi
           // check => isPlayer 1 || 2 => xu thua
-          if (isStarted) handleLose([]);
-          Socket.leaveChair(id);
+
           setIsPlayer(false);
+          if (isStarted) await handleLose([]);
+          Socket.leaveChair(id);
           // setIsStarted(false);
         }
         Socket.leaveRoom(id);
@@ -157,9 +158,10 @@ const Game: React.FC = (props: any) => {
           if (isPlayer) {
             // leave room khi dang choi
             // check => isPlayer 1 || 2 => xu thua
+
+            setIsPlayer(false);
             if (isStarted) handleLose([]);
             Socket.leaveChair(id);
-            setIsPlayer(false);
             // setIsStarted(false);
           }
           Socket.leaveRoom(id);
@@ -207,12 +209,17 @@ const Game: React.FC = (props: any) => {
   };
 
   const leaveRoomHandler = () => {
+    if (isStarted) {
+      Notification('error', 'Please finish this game!');
+      return;
+    }
     if (isPlayer) {
       // leave room khi dang choi
       // check => isPlayer 1 || 2 => xu thua
-      if (isStarted) handleLose([]);
       Socket.leaveChair(id);
       setIsPlayer(false);
+      if (isStarted) handleLose([]);
+
       // setIsStarted(false);
     }
     Socket.leaveRoom(id);
@@ -292,8 +299,6 @@ const Game: React.FC = (props: any) => {
     (winner: any, loser: any) => {
       let newPlayer1;
       let newPlayer2;
-      if (player1 === null) return;
-      if (player2 === null) return;
       if (player1?._id === winner) {
         newPlayer1 = { ...player1, cup: player1?.cup + 1, win: player1?.win + 1 };
         if (player2?._id === loser) {
@@ -305,6 +310,7 @@ const Game: React.FC = (props: any) => {
           newPlayer1 = { ...player1, cup: player1?.cup - 1, lose: player1?.lose + 1 };
         }
       }
+
       if (newPlayer1) setPlayer1(newPlayer1);
       if (newPlayer2) setPlayer2(newPlayer2);
     },
