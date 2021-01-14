@@ -3,17 +3,21 @@ import { Spin } from 'antd';
 import React, { useState } from 'react';
 
 interface Props {
-  handleSubmit: any;
+  handleQuick: any;
+  handleRemoveQuick: any;
 }
 const antIcon = <LoadingOutlined style={{ fontSize: 60 }} spin />;
 export const QuickPlay = (props: Props) => {
-  const { handleSubmit } = props;
+  const { handleQuick, handleRemoveQuick } = props;
   const [loading, setLoading] = useState(false);
 
   const handleClick = () => {
     setLoading(true);
-    if (loading === false) handleSubmit();
-    else setLoading(false);
+    if (loading === false) handleQuick();
+    else {
+      handleRemoveQuick();
+      setLoading(false);
+    }
   };
   return (
     <div>

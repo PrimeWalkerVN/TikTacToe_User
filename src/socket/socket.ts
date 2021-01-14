@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
-const ENDPOINT = 'localhost:8080';
-// const ENDPOINT = 'https://tictactoe-api-v1.herokuapp.com';
+// const ENDPOINT = 'localhost:8080';
+const ENDPOINT = 'https://tictactoe-api-v1.herokuapp.com';
 
 let instance: any = null;
 
@@ -22,6 +22,8 @@ interface SocketType {
   sendMessage: any;
   startNewMatch: any;
   inviteUser: any;
+  quickPlay: any;
+  removeQuickPlay: any;
 
   subNewCreatedRoom: any; // when user create room
   subViewerTrigger: any; // when user join room or leave
@@ -32,6 +34,7 @@ interface SocketType {
   subNewMatch: any;
   subHaveInvitation: any;
   offSubHaveInvitation: any;
+  subHaveQuickPlay: any;
 
   // Match Game
   play: any;
@@ -58,6 +61,15 @@ const Socket: SocketType = {
   logout: () => {
     const token = getToken();
     if (token) instance.emit('logout', { token });
+  },
+  quickPlay: (user: any) => {
+    const token = getToken();
+    if (token) instance.emit('quickPlay', { user });
+  },
+  removeQuickPlay: (user: any) => {
+    const token = getToken();
+    if (token) instance.emit('removeQuickPlay', { user });
+    instance.off('haveQuickPlay');
   },
 
   // Room
@@ -93,6 +105,7 @@ const Socket: SocketType = {
   inviteUser: (roomId: any, userInvite: any, userId: any) => {
     instance.emit('inviteUser', { roomId, userInvite, userId });
   },
+
   subViewerTrigger: (cb: any) => {
     instance.on('viewerTrigger', (data: any) => {
       return cb(null, data);
@@ -137,6 +150,11 @@ const Socket: SocketType = {
   },
   offSubHaveInvitation: async () => {
     await instance.off('haveInvitation');
+  },
+  subHaveQuickPlay: (cb: any) => {
+    instance.on('haveQuickPlay', (data: any) => {
+      return cb(null, data);
+    });
   },
 
   // Game

@@ -20,14 +20,6 @@ const Profile = (props: any) => {
   const [matches, setMatches] = useState<any>([]);
   const history = useHistory();
   const dispatch = useDispatch();
-  useEffect(() => {
-    const { user } = location.state;
-    if (user) {
-      getUserInfo(user._id);
-      getMe();
-      getMatches(user._id);
-    }
-  }, [location]);
 
   const getMe = useCallback(async () => {
     setIsLoading(true);
@@ -42,6 +34,14 @@ const Profile = (props: any) => {
       setIsLoading(false);
     }
   }, [dispatch]);
+  useEffect(() => {
+    const { user } = location.state;
+    if (user) {
+      getUserInfo(user._id);
+      getMe();
+      getMatches(user._id);
+    }
+  }, [getMe, location]);
 
   const getUserInfo = async (userId: any) => {
     setIsLoading(true);

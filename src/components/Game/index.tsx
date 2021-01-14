@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Tabs } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useBeforeunload } from 'react-beforeunload';
@@ -147,6 +148,7 @@ const Game: React.FC = (props: any) => {
       }
       if (history.action === 'POP') {
         if (locationKeys[1] === location.key) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           setLocationKeys(([_, ...keys]: any) => keys);
 
           // Handle forward event
@@ -226,10 +228,10 @@ const Game: React.FC = (props: any) => {
       // const winner: any = player1.username === loser.username ? player2._id : player1._id; // loi logic?
       let winner: string;
       const loser: string = user._id;
-      if (loser === player1._id) {
-        winner = player2._id;
+      if (loser === player1?._id) {
+        winner = player2?._id;
       } else {
-        winner = player1._id;
+        winner = player1?._id;
       }
       if (winner !== loser) {
         const data = {

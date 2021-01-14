@@ -92,8 +92,20 @@ const Main = () => {
       setIsLoading(false);
     }
   };
+
   const handleQuickPlay = () => {
-    // console.log('Quick play');
+    Socket.quickPlay(user);
+    Socket.subHaveQuickPlay((err: any, data: any) => {
+      if (err) return;
+      if (data?.user1?.username === user.username || data?.user2?.username === user.username) {
+        if (data.roomId) {
+          acceptInvitation(data.roomId);
+        }
+      }
+    });
+  };
+  const handleRemoveQuickPlay = () => {
+    Socket.removeQuickPlay(user);
   };
   const acceptInvitation = async (roomId: any) => {
     if (roomId) {
@@ -140,7 +152,7 @@ const Main = () => {
       {isLoading && <Loading />}
       <div className="main-add flex flex-col items-center shadow-xl mr-5 p-5">
         <AddBoard handleSubmit={handleSubmit} />
-        <QuickPlay handleSubmit={handleQuickPlay} />
+        <QuickPlay handleQuick={handleQuickPlay} handleRemoveQuick={handleRemoveQuickPlay} />
         <LeaderBoard data={ranks} />
       </div>
       <div className="main-lists">
