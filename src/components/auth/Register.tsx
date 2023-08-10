@@ -16,9 +16,13 @@ const Register: React.FC = () => {
       const res: any = await usersApi.register(params);
       history.push('/login');
       Notification('success', 'Register success, please check your email to active your account', res.message);
-    } catch (err) {
+    } catch (err: any) {
       if (err.response) setErrors(err.response.data.message.toString());
-      else setErrors(err);
+      else if (err.request) {
+        setErrors('Server is not response');
+      } else {
+        setErrors(err.message);
+      }
     }
     setIsLoading(false);
   };

@@ -2,7 +2,7 @@ import axios from 'axios';
 import queryString from 'query-string';
 
 const axiosClient = axios.create({
-  baseURL: process.env.REACT_APP_API,
+  baseURL: `${process.env.REACT_APP_API}${process.env.REACT_APP_API_VERSION}`,
   headers: {
     'content-type': 'application/json'
   },
@@ -32,7 +32,6 @@ axiosClient.interceptors.response.use(
     if (response && response.data) {
       return response.data;
     }
-
     return response;
   },
   error => {

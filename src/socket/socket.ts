@@ -1,7 +1,6 @@
 import { io } from 'socket.io-client';
 
-// const ENDPOINT = 'localhost:8080';
-const ENDPOINT = 'https://tictactoe-api-v1.herokuapp.com';
+const ENDPOINT = process.env.REACT_APP_API || 'http://localhost:8000';
 
 let instance: any = null;
 
