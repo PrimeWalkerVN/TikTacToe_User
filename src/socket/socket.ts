@@ -1,6 +1,5 @@
 import { io } from 'socket.io-client';
-
-const ENDPOINT = process.env.REACT_APP_API || 'http://localhost:8000';
+import { SOCKET_URL } from '../configs';
 
 let instance: any = null;
 
@@ -47,7 +46,7 @@ export const getToken = () => {
 };
 const Socket: SocketType = {
   openConnect: () => {
-    instance = io(ENDPOINT);
+    instance = io(SOCKET_URL ?? '');
   },
   getInstance: () => instance,
   disconnect: () => {

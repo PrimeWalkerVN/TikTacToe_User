@@ -10,6 +10,7 @@ import { setLogged, setUser, setUserLogin } from '../../redux/reducers/userReduc
 import Loading from '../common/Loading';
 
 import Notification from '../common/Notification';
+import { API_URL } from '../../configs';
 
 const Login: React.FC = () => {
   const [errors, setErrors] = useState<string>('');
@@ -112,12 +113,12 @@ const Login: React.FC = () => {
         </Form>
         <div className="flex pb-5">
           <button type="button" className="w-12 h-12 mr-5">
-            <a href={`${process.env.REACT_APP_API}/users/auth/facebook`}>
+            <a href={`${API_URL}/users/auth/facebook`}>
               <img src={facebookLogo} alt="facebook logo" />
             </a>
           </button>
           <button type="button" className="w-12 h-12">
-            <a href={`${process.env.REACT_APP_API}/users/auth/google`}>
+            <a href={`${API_URL}/users/auth/google`}>
               <img src={googleLogo} alt="google logo" />
             </a>
           </button>
