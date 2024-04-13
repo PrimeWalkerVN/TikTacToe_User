@@ -159,7 +159,7 @@ const Main = () => {
         <RoomLists data={rooms} clickDetail={handleJoinRoom} />
       </div>
       <div className="main-users flex flex-col bg-scroll mx-5 ">
-        <div className="text-bold text-xl my-5">Users online</div>
+        <div className="text-bold text-xl my-5 flex items-center justify-center ">Users online</div>
         <UsersStatus users={users} user={user} />
       </div>
       <Modal

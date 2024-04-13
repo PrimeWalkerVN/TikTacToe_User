@@ -8,6 +8,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+## Environment variables
+
+create file `.env` and follow on `env.default`
+
 ### `yarn start`
 
 Runs the app in the development mode.\
